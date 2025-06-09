@@ -1,0 +1,59 @@
+/* Style Sheet for Project 4, Tic Tac Toe*/
+/* By Ryan Retan */
+
+#headerBox {
+    position: relative;
+    width: 80%;
+    height: 16vh;
+    background-color: rgb(169, 169, 255);
+    border: 2px solid black;
+    margin-top: 8px;
+    left: 50%;
+    transform: translate(-50%,0%); /* used to center box*/
+}
+#contentBox {
+    width: 99.5%;
+    height: 97vh;
+    background-color:cornflowerblue;
+    margin: 2px;
+    border: 2px solid black; 
+}
+
+#gameBox {
+    width: 70vh;
+    height: 70vh;
+
+    background-color:cadetblue;
+    margin: 3px;
+    border: 2px solid black; 
+
+    margin: auto;
+    margin-top: 8px;
+}
+
+.square {
+    font-size: larger;
+    width: 21vh;
+    height: 21vh;
+    float: left;
+    background-color:lightskyblue;
+    margin: 7px;
+    border: .2vh solid black;
+}
+.square img {
+    width: 100%; /* used to center image inside square*/
+}
+
+#annocementBox {
+    position:absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%); /* used to center box*/
+    font-size: larger;
+    width: 80%;
+    height: 18vh;
+    background-color:teal;
+    margin: 6px;
+    border: 2px solid black;
+    align-items: center;
+}

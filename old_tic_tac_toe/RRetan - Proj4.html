@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<!-- Created By Ryan Retan for COSC 231 -->
+<!-- Project 4 -->
+<!-- Due November 19, 2024 -->
+<!-- Tic Tac Toe -->
+
+<html lang="en">
+<head>
+    <title>RRetan Project4</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <!-- the main box for the entire site -->
+    <div id="contentBox">
+    <!-- the box at the top of the site is created -->
+    <div id="headerBox" style="text-align: center;"> <h1>Tic Tac Toe --- By Ryan Retan</h1> <h3> Click on an open box to place an X, get 3 in a row to win! </h3></div>
+    <!-- hidden box that pops up whenever information is needed to be given to the user-->
+    <div id="annocementBox" style="display:none" onclick="this.style.display = 'none'"> </div>
+    <!-- the box that holds all the game squares -->
+    <div id="gameBox">
+    <!-- all the gamesquares are made that call the function playerMove when clicked on -->
+    <div class="square" name="S1" onclick="playerMove('S1')"></div> 
+    <div class="square" name="S2" onclick="playerMove('S2')"></div> 
+    <div class="square" name="S3" onclick="playerMove('S3')"></div>
+    <div class="square" name="S4" onclick="playerMove('S4')"></div>
+    <div class="square" name="S5" onclick="playerMove('S5')"></div>
+    <div class="square" name="S6" onclick="playerMove('S6')"></div>
+    <div class="square" name="S7" onclick="playerMove('S7')"></div>
+    <div class="square" name="S8" onclick="playerMove('S8')"></div>
+    <div class="square" name="S9" onclick="playerMove('S9')"></div>
+    </div>
+    <br />
+    <!-- the reset button to reset the game using the reset method-->
+    <center><button onclick="reset()" style="padding: 10px 40px;">RESET</button></center>
+    </div>
+</body>
+<script>
+    //variables are defined
+    let playerWins = 0;
+    let playerTurn = true;
+    let moves = 0;
+
+    //when the player moves
+    function playerMove(space) {
+        //is it the players turn?
+        if(playerTurn) {
+            //the space is checked if it has anything inside of it
+            if(document.getElementsByName(space)[0].innerHTML == "") {
+                moves++;
+                //the x image I made is then put in the square
+                document.getElementsByName(space)[0].innerHTML = "<img src='X.png' class='image'>";
+                //the users turn is disabled so the squares cant be spammed
+                playerTurn = false;
+                //the user is checked if they won
+                if(!win()) {
+                    //if not its checked if there was a tie
+                    if(!tie()) {
+                        //if its not a tie, there is a random amount of time, then the CPUs turn
+                        setTimeout(CPUMove, Math.random() * 500 + Math.random() * 10);
+                    }
+                }  else {
+                    //if the user won, its displayed, and the number of player wins is incremented
+                    playerWins++;
+                    document.getElementById("annocementBox").style.display = "flex";
+                    document.getElementById("annocementBox").innerHTML= "<h2> You Won! Click reset.  Your wins: " + playerWins + "</h2>";
+                }
+            } else {
+                //if the box has an X or O, the annocement box is shown with the message to pick a new square
+                document.getElementById("annocementBox").style.display = "flex";
+                document.getElementById("annocementBox").innerHTML= "<h2> Already Occupied! Pick a new space! (Click to hide) </h2>";
+            }
+        } else {
+            document.getElementById("annocementBox").style.display = "flex";
+            document.getElementById("annocementBox").innerHTML= "<h2> Not your turn! (Click to hide) </h2>";
+        }
+    }
+
+    //the CPUs turn called by the playersturn method
+    function CPUMove() {
+        //a random space is selected
+        let move = "S" + Math.floor(Math.random() * 8 + 1);
+        let space = document.getElementsByName(move)[0].innerHTML;
+        //if the space has something in it, the method is recursviely called to try again
+        if((space != "")) {
+            setTimeout(CPUMove, Math.random() * 1000);
+        } else {
+            //if the space is valid, the O image I made is put into the square
+            document.getElementsByName(move)[0].innerHTML = "<img src='O.png' class='image'>";
+            //the cpu is checked if it won
+            if(!win()) {
+                //if the cpu did not win, it is the players turn. a tie cannot happen on the cpus turn
+                playerTurn = true;
+            } else {
+                //if the cpu wins, the annocment box is shown saying as much
+                document.getElementById("annocementBox").style.display = "flex";
+                document.getElementById("annocementBox").innerHTML= "<h2> You lost! Click reset. </h2>";
+            }
+        }
+    }
+
+    //the method that checks if someone won
+    function win() {
+        //only checks after there is the chance of a winner
+        if(moves >= 3) {
+            //every win is checked manually by comapring the html of all 3 boxes, and making sure they arent empty
+            //all return true if there was a win
+            //top 3
+            if(document.getElementsByName("S1")[0].innerHTML == document.getElementsByName("S2")[0].innerHTML && document.getElementsByName("S2")[0].innerHTML == document.getElementsByName("S3")[0].innerHTML) {
+                if(document.getElementsByName("S1")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //middle 3
+            if(document.getElementsByName("S4")[0].innerHTML == document.getElementsByName("S5")[0].innerHTML && document.getElementsByName("S5")[0].innerHTML == document.getElementsByName("S6")[0].innerHTML) {
+                if(document.getElementsByName("S4")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //bottom 3
+            if(document.getElementsByName("S7")[0].innerHTML == document.getElementsByName("S8")[0].innerHTML && document.getElementsByName("S8")[0].innerHTML == document.getElementsByName("S9")[0].innerHTML) {
+                if(document.getElementsByName("S7")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //left 3
+            if(document.getElementsByName("S1")[0].innerHTML == document.getElementsByName("S4")[0].innerHTML && document.getElementsByName("S4")[0].innerHTML == document.getElementsByName("S7")[0].innerHTML) {
+                if(document.getElementsByName("S1")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //middle 3
+            if(document.getElementsByName("S2")[0].innerHTML == document.getElementsByName("S5")[0].innerHTML && document.getElementsByName("S5")[0].innerHTML == document.getElementsByName("S8")[0].innerHTML) {
+                if(document.getElementsByName("S2")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //bottom 3
+            if(document.getElementsByName("S3")[0].innerHTML == document.getElementsByName("S6")[0].innerHTML && document.getElementsByName("S6")[0].innerHTML == document.getElementsByName("S9")[0].innerHTML) {
+                if(document.getElementsByName("S3")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //diagnal top left to bottom right
+            if(document.getElementsByName("S1")[0].innerHTML == document.getElementsByName("S5")[0].innerHTML && document.getElementsByName("S5")[0].innerHTML == document.getElementsByName("S9")[0].innerHTML) {
+                if(document.getElementsByName("S1")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+            //diagnal top right to bottom left
+            if(document.getElementsByName("S3")[0].innerHTML == document.getElementsByName("S5")[0].innerHTML && document.getElementsByName("S5")[0].innerHTML == document.getElementsByName("S7")[0].innerHTML) {
+                if(document.getElementsByName("S3")[0].innerHTML != "") {
+                    return true;
+                }
+            }
+        }
+        //if there was less than 3 moves per person, or if no valid win conditional was met
+        return false;
+    }
+
+    //checks to see if there was a tie game
+    function tie() {
+        document.getElementById("annocementBox").style.display = "none";
+        //if there was any empty spaces, false is returned
+        for(i = 1; i <= 9; i++) {
+            if(document.getElementsByName("S" + i)[0].innerHTML == "") {
+                return false;
+            }
+        }
+        //if there is a tie, true is returned and the annocement box is shown saying as much
+        document.getElementById("annocementBox").style.display = "flex";
+        document.getElementById("annocementBox").innerHTML= "<h2> Tie! Click Reset. </h2>";
+        return true;
+    }
+
+    //method that resets all the squares, the players turn, and hides the annocment box
+    function reset() {
+        for(i = 1; i <= 9; i++) {
+            document.getElementsByName("S" + i) [0].innerHTML = "";
+        }
+        playerTurn = true;
+        moves = 0;
+        document.getElementById("annocementBox").style.display = "none";
+
+        //small easter egg. if the user gets 5 wins, the background turns to silver, after 10 gold
+        if(playerWins >= 10) {
+            document.getElementById("contentBox").style.backgroundColor = "Gold"; 
+        } else if(playerWins >= 5) {
+            document.getElementById("contentBox").style.backgroundColor = "#484b4f";
+        }
+    }
+
+</script>
+</html>
