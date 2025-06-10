@@ -5,11 +5,12 @@
 var mysql      = require('mysql');
 // Create connection & verify credentials
 var dbCon = mysql.createConnection(
-        {       host     : 'localhost',
-                user     : '436_mysql_user',
-                password : '123pwd456',
-                database : '436db'
-        }
+    {       
+        host     : 'localhost',
+        user     : '436_mysql_user',
+        password : '123pwd456',
+        database : '436db'
+    }
 );
 dbCon.connect(function(error){
 	if (error) { // connection failed?
@@ -20,4 +21,4 @@ dbCon.connect(function(error){
 });
 
 // export handle to the connection, for use in other models to access thd DB
-exports.dbCon = dbCon;`` 
+exports.dbCon = dbCon;

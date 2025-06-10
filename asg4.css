@@ -1,10 +1,12 @@
 /* Style Sheet for Openface.html */
 
 #headtable, th, td {
+    position: relative;
     border: 2px solid black;
     border-collapse: collapse; /* keep the spacing all neat*/
     font-family: Arial, Helvetica, sans-serif;/*default fonts*/
     text-align: center; /*centers text*/
+    z-index: 3;
 }
 .hidden {
     display: none;
@@ -109,4 +111,59 @@ input[type=submit]:hover{
     text-align: center; /*centers text*/
     float: left;
     overflow-y:auto
+}
+
+#game_window {
+    position: fixed; /* Covers the entire viewport */
+    /*removes defaults*/
+    top: 0;
+    left: 0;
+    /* sets size of overlay */
+    width: 100%;
+    height: 100%;
+    /* makes background transparent */
+    background-color: rgba(30, 100, 100); /* makes overlay semi-transparent  */
+    z-index: 2; /* Ensure it's on top of other everything else */
+    display: flex; /* centers the display*/
+    /*keeps things formated in the center*/
+    justify-content: center;
+    align-items: center;
+}
+
+#game_contain_squares {
+    position: absolute;
+    top: 210px;
+    display: flex;
+    border: 2px solid gray;
+    margin: -2px;
+    width: 500px;
+    height: 500px;
+    flex-wrap: wrap;
+}
+
+
+.game_squares > * {
+    flex: 1 1 0;
+    margin: -2px;
+    align-items: center;
+}
+
+.game_squares {
+    box-sizing: border-box;
+    border: 2px solid black;
+    width: calc(100%/3);
+    height: calc(500px/3);
+    display: flex;
+    text-align: center;
+}
+
+#game_info {
+    position: absolute;
+    top: 100px;
+    width: 90%;
+    height: 80px;
+    border: 2px solid black;
+    margin-top: -2px;
+    box-sizing: border-box;
+    text-align: center
 }

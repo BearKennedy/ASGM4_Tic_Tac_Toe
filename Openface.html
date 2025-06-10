@@ -20,8 +20,15 @@
 				// Process any fetch related errors here
     				alert('Error in fetch:', error);
   			});
-		}
-      
+	}
+
+      function toggle_game_div() {
+            if(document.getElementById('game_window').style.display == 'none') {
+                  document.getElementById('game_window').style.display = 'flex';
+            } else {
+                  document.getElementById('game_window').style.display = 'none';    
+            }
+      }
 </script>
 </head>
 <body>
@@ -41,11 +48,32 @@
             </div>
             <div id = "avialable_games">
                   actives
-                  <button><h1></h1></button>
+                  <button onclick = "toggle_game_div()"><h1>JOIN</h1></button>
+            </div>
+      </div>
+      <div id = "game_window" style="display:none">
+            <div id = "game_info"> 
+                  <h1>X: USERNAME &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                  X's TURN &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                  O: USERNAME</h1>
+            </div>
+            <div id = "game_contain_squares"> 
+                  <div class = "game_squares" name = "1"></div>
+                  <div class = "game_squares" name = "2"></div>
+                  <div class = "game_squares" name = "3"></div>
+                  <div class = "game_squares" name = "4"></div>
+                  <div class = "game_squares" name = "5"></div>
+                  <div class = "game_squares" name = "6"></div>
+                  <div class = "game_squares" name = "7"></div>
+                  <div class = "game_squares" name = "8"></div>
+                  <div class = "game_squares" name = "9"></div>
+            </div>
+            <div width="100%" style= "position: fixed; bottom: 10px;">
+                  <h1 onclick="toggle_game_div()" style="cursor: pointer;">LEAVE</h1>
             </div>
       </div>
 
-      <div id = "Open_menu" style="display: none"> <!-- remove 'none'-->
+      <div id = "Open_menu" style="display: absolute"> <!-- remove 'none'-->
             <div class="Open_menu-content">
                   <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
                   <h3>Created by Ryan and Bear:</h3>
