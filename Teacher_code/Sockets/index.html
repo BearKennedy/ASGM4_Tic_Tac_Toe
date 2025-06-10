@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Include socket.io client API from cdn //-->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+
+    <script>
+	var connectedSocket = null;
+
+	// Send message to Server. 
+	// Will create a connection if one is not already established
+	function sendToServer(messageType, message) {
+  		try {
+    			if (!connectedSocket) createSocket();
+    			connectedSocket.emit(messageType, message); // send msg to server
+  		} catch (err) {
+    			alert("System error 987: " + err + " contact us, or try again later");
+  		}
+	}
+
+	// Connect to server, using same origin as where this script/webpage was loaded from. 
+	// This is how the CORS was configured on the server.js
+	function createSocket() {
+        	try {
+        		connectedSocket = io(window.location.hostname+":8080");
+        	} catch (err) {
+                	alert('connectedSocket create error, contact us');
+                	connectedSocket = null;
+                	return;
+        	}
+
+		// Come here when messages of type "general-msg" are sent from server to client via the connectedSocket
+		// You get to specify the types of messages you want for your application
+		// You can makeup whatever name you want for the message types
+		// Similarly, you can send/receive just one messageType, however the associated message/data could be
+		// an object with multiple attributes which can help you decipher more info at the data e.g. the same messageType could be used to send thes two messages
+		// {'size': 'M', 'what':'shirt'} or {'size':11, 'what':'shoe'}
+		// So, the what attribute gives you more differentiation
+        	connectedSocket.on("general-msg", function (message) {
+			document.getElementById("outputDiv").innerHTML += "<div style='color':blue>Server general msg: "+message+"</div>";
+        	});
+
+		// Here's another message type event handler
+		// Come here when messages of type "game-msg" are sent from server to client via the connectedSocket
+        	connectedSocket.on("PrivateRoom1-msg", function (message) {
+			document.getElementById("outputDiv").innerHTML += "<div style='color':blue>Server private rm1 msg: "+message+"</div>";
+        	});
+        
+        	connectedSocket.on("alert", function (message) {
+			alert(message);
+        	});
+        }
+
+	// Send the typed message to server, then wipe the typed message
+        function sendMessage(media) {
+		if ((message=document.getElementById("message").value).length==0) alert("Can't send empty string");
+		else {
+			sendToServer("general-msg", {'media':media, 'message':message});
+			document.getElementById("outputDiv").innerHTML += "<div style='color':blue>"+messageType+">> Client says: "+message+"</div>";
+            		document.getElementById("message").value = "";
+		}
+	}
+
+	// Handle join, exit and other messaging for the private room
+	function privateRoomMessaging(what) {
+		if (what.startsWith("Join")) { // joining
+			sendToServer('PrivateRoom1-msg', 'JOIN');
+			document.getElementById("pButton1").innerText='Exit Private Room 1';
+			document.getElementById("pButton2").style.display="block";
+		}
+		else if (what.startsWith("Exit")) { // exiting
+			sendToServer('PrivateRoom1-msg', 'EXIT');
+			document.getElementById("pButton1").innerText='Join Private Room 1';
+			document.getElementById("pButton2").style.display="none";
+		}
+		else { // must be sending typed msg to private room
+			if ((message=document.getElementById("message").value).length==0) alert("Can't send empty string");
+			else {
+				sendToServer('PrivateRoom1-msg', message);
+				document.getElementById("outputDiv").innerHTML += "<div style='color':blue>PrivateRoom-msg>> Client says: "+message+"</div>";
+         	   		document.getElementById("message").value = "";
+			}
+		}
+	}
+
+	createSocket(); // make a scoonection as soon as the script is loaded
+			
+    </script>
+</head>
+<body>
+    <center>
+	<div style='padding:2.0em;width:30.0em;border:4px solid brown; border-radius:1.0em'>
+		<h2 style='color:blue'>Socket.IO with Node.js example<br><small>mini chatroom</small></h2>
+		<input style="height:2.0em;width:15.0em;" type="text" id="message" placeholder="Type message here"><p>
+		<button onclick="sendMessage('broadcastAllPlusMe')" style="height:2.5em">Broadcast (all plus me)</button>&nbsp;
+		<button onclick="sendMessage('broadcastAllMinusMe')" style="height:2.5em">Broadcast (all minus me)</button>&nbsp;
+		<button onclick="sendMessage('ResendToMe')" style="height:2.5em">Resend to me</button><p>
+		<button id='pButton1' onclick="privateRoomMessaging(getElementById('pButton1').textContent)" style="height:2.5em">Join Private Room 1</button><p>
+		<button id='pButton2' onclick="privateRoomMessaging('')" style="display:none;height:2.5em">Send to private rm 1 (+me)</button><p>
+        	<div id="outputDiv" style="width:20.0em;height:20.0em;text-align:left;overflow:auto;background-color:#F0F0F0"></div>
+	</div>
+    </center>
+</body>
+</html>

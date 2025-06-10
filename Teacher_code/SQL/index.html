@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script>
+		// Add item to appropriate list, use fetch and GET method
+		async function addToDBlist (whichList) {
+		        // fetch() returns a promise (i.e. async/does not wait). And when a response comes back from the server,
+                        // the associated value can be extracted
+			fetch('http://'+window.location.hostname+':8080/{"item":"'+document.getElementById("item").value+'","whichList":"'+whichList+'"}')  // send it as encoded JSON string
+  .then(response => {
+				if (!response.ok) {
+      					throw new Error(`Error, response status: ${response.status}`);
+    				}
+				document.getElementById("item").value="";
+    				return response.text(); // assumes text is returned. If object is returned, use response.json()
+  			}).then(data => {
+    				// Process the fetched data
+				alert(data);
+			}).catch(error => {
+				// Process any fetch related errors here
+    				alert('Error in fetch:', error);
+  			});
+		}
+
+		// Show appropriate list using fetch and POST method
+		async function showList (whichList) {
+			try {
+			        // fetch() returns a promise (i.e. async/does not wait). And when a response comes back from the server,
+        	                // the associated value can be extracted
+				const response = await fetch("http://"+window.location.hostname+":8080", {
+					method: "POST",
+					//headers: {'Content-Type': 'application/json', },
+					//body: JSON.stringify({ "whichList": whichList }),
+					headers: {"Content-Type": "application/x-www-form-urlencoded",},
+					body: new URLSearchParams({"whichList": whichList}), // autoconverts to "&whichList=`whichList`
+				});
+				if (!response.ok) {
+				alert(`Error, response status: ${response.status}`);
+      					throw new Error(`Error, response status: ${response.status}`);
+    				}
+
+				// Await for the return data
+				const data = await response.text();
+
+    				// Process the fetched data
+				document.getElementById("list").innerHTML=data;
+			} catch (error) {
+				// Process any fetch related errors here
+    				alert('Error in fetch-post:', error);
+  			};
+		}
+	</script>
+</head>
+<body>
+    <center>
+	<div style='padding:2.0em;width:40.0em;border:4px solid brown; border-radius:1.0em'>
+		<h2 style='color:blue;margin-top:-0.5em'>NodeJS with MySQL example<br><small>Creates & shows two types of lists - each stored as a table in MySQL DB.<br><span style='font-size:80%;color:brown'>Also illustrates fetch API with GET & POST</spsn></small></h2>
+		<!-- Add to list and show list buttons //-->
+		<input style="height:2.0em;width:18.0em;text-align:center" type="text" id="item" placeholder="Type an animal or plant and click Add"><p>
+		<button onclick="addToDBlist('animals')" style="height:2.5em">Add to animals list</button>&nbsp;&nbsp;
+		<button onclick="addToDBlist('plants')" style="height:2.5em">Add to plants list</button><p><br>
+		<button onclick="showList('animals')" style="height:2.5em">Show current list - animals</button>&nbsp;&nbsp;
+		<button onclick="showList('plants')" style="height:2.5em">Show current list - plants</button><p><br>
+        	<div id="list" style="width:20.0em;height:20.0em;text-align:left;overflow:auto;background-color:#F0F0F0"></div>
+	</div>
+    </center>
+</body>
+</html>
