@@ -1,12 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
-      <style>  #headtable, th, td {
-            border: 2px solid black;
-            border-collapse: collapse; /* keep the spacing all neat*/
-            font-family: Arial, Helvetica, sans-serif;/*default fonts*/
-            text-align: center; /*centers text*/
+      <style>  
+  
+            #headtable, th, td {
+                  border: 2px solid black;
+                  border-collapse: collapse; /* keep the spacing all neat*/
+                  font-family: Arial, Helvetica, sans-serif;/*default fonts*/
+                  text-align: center; /*centers text*/
             }
+            .hidden {
+                  display: none;
+            }
+      /*Overlays and such*/
+      
+      /*For Help menu*/
+            #Open_menu  {
+                  position: fixed; /* Covers the entire viewport */
+                  /*removes defaults*/
+                  top: 0;
+                  left: 0;
+                  /* sets size of overlay */
+                  width: 100%;
+                  height: 100%;
+                  /* makes background transparent */
+                  background-color: rgba(0, 0, 0, .5); /* makes overlay semi-transparent  */
+                  z-index: 10; /* Ensure it's on top of other everything else */
+                  display: flex; /* centers the display*/
+                  /*keeps things formated in the center*/
+                  justify-content: center;
+                  align-items: center;
+                  
+                  /*default fonts*/
+                  font-family: Arial, Helvetica, sans-serif;
+            }
+            .Open_menu-content {
+                  position: relative; /* lets us keep the button in the top right of the overlay not just the screen */
+                  background-color: rgb(255, 255, 255); 
+                  padding: 20px;
+                  border-radius: 5px;
+                  border: 3px solid black;
+                  /*makes the overlay more square like*/
+                  width: 75%;
+                  height: 80%;
+                  overflow-y: auto; /*lets the content scroll down */
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+
+              /*makes the input screen for logging in and signing up look nicer*/
+      input {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            /*rounds corners of items*/
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+      }
+      
+      input[type=submit]{
+            background-image: linear-gradient(to right, rgb(255, 0, 0) , rgb(13, 182, 255));
+            border: 3px solid rgb(0, 0, 0);
+            border-radius: 10px;
+            color: white;
+            /*rounds corners of items*/
+            padding: 12px 12px;
+            text-decoration: none;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 4px 2px;
+            /*sets cursor to look right for clicking*/
+            cursor: pointer;
+      }
+
+            /*effects for when user hovers over submit and changes color*/
+      input[type=submit]:hover{
+            background-image: linear-gradient(to right, rgb(13, 182, 255) , rgb(255, 0, 0));
+            color: rgb(0, 0, 0);
+            box-shadow: rgba(32, 31, 31, 0.35) 0px 7px 10px;
+            font-weight: 900;
+      }
+
       </style>
 <body>
       <table id="headtable" style="width: 100%;"> <!--creates head table -->
@@ -14,8 +88,49 @@
             <!--creates welcome banner and shows it to user-->
             <th colspan="3" style="font-size: 200%;"> <img src="X.png" alt="X" style="height: 40px; float: left;"> THE BEST TIC-TAC-TOE WEBSITE <img src="O.webp" alt="P" style="height: 40px; float: right;" ></th>
       </tr>
-  
-</table>
+      </table>
+      <div id = "Open_menu">
+            <div class="Open_menu-content">
+                  <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
+                  <h3>Created by Ryan and Bear:</h3>
+                  <p> Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
+                        In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar
+                        vivamus fringilla lacus nec metus bibendum egestas. 
+                        Iaculis massa nisl malesuada lacinia integer nunc posuere.
+                        Ut hendrerit semper vel class aptent taciti sociosqu. 
+                        Ad litora torquent per conubia nostra inceptos himenaeos. </p>
+                  <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.
+                        Quisque faucibus ex sapien vitae pellentesque sem placerat. 
+                        In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor.
+                        Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. 
+                        Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos</p>
+                  <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. 
+                        Quisque faucibus ex sapien vitae pellentesque sem placerat. 
+                        In id cursus mi pretium tellus duis convallis. 
+                        Tempus leo eu aenean sed diam urna tempor. 
+                        Pulvinar vivamus fringilla lacus nec metus bibendum egestas. 
+                        Iaculis massa nisl malesuada lacinia integer nunc posuere. 
+                        Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per 
+                        conubia nostra inceptos himenaeos.Lorem ipsum dolor sit amet consectetur 
+                        adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
+                        </p>
+                       
+
+                         <p>ARE YOU READY?</p>
+
+                         <div><form      >   
+                  <label for="Username">Username:</label><br>
+                  <input type="text" id="Username"  placeholder="John"><br>
+ 
+                  <div id= "name_taken" class="err_msg hidden">That Username is already taken. Please try a new name</div>
+                  <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
+
+                  <input type="submit" value="Submit">
+            </form> </div>
+                         
+
+            </div>
+      </div>
 </body>
 </head>
 </html>
