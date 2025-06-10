@@ -20,4 +20,4 @@ dbCon.connect(function(error){
 });
 
 // export handle to the connection, for use in other models to access thd DB
-exports.dbCon = dbCon;
+exports.dbCon = dbCon;`` 

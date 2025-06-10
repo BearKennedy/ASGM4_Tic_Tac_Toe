@@ -3,6 +3,24 @@
 <head>
 <link rel="stylesheet" type="text/css" href="asg4.css">
 <script>
+      async function addToDB (whichList) {
+		        // fetch() returns a promise (i.e. async/does not wait). And when a response comes back from the server,
+                        // the associated value can be extracted
+			fetch('http://'+window.location.hostname+':8081/{"Username":"'+document.getElementById("Username").value+'","whichList":"'+whichList+'"}')  // send it as encoded JSON string
+  .then(response => {
+				if (!response.ok) {
+      					throw new Error(`Error, response status: ${response.status}`);
+    				}
+				document.getElementById("Username").value="";
+    				return response.text(); // assumes text is returned. If object is returned, use response.json()
+  			}).then(data => {
+    				// Process the fetched data
+				alert(data);
+			}).catch(error => {
+				// Process any fetch related errors here
+    				alert('Error in fetch:', error);
+  			});
+		}
       
 </script>
 </head>
@@ -64,7 +82,7 @@
                   <div id= "name_taken" class="err_msg hidden">That Username is already taken. Please try a new name</div>
                   <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
 
-                  <input type="submit" value="Submit">
+                  <input type="submit" value="Submit" onclick="addToDB('436db')">
                   </form> 
                   </div>
             </div>
