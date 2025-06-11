@@ -6,7 +6,9 @@
   flush privileges;
 */
 
-var dbCon = require('./connectToDB.js').dbCon; // connect to DB
+
+var connectToDB = require('./connectToDB.js') // connect to DB
+const dbCon = connectToDB.dbCon; 
 
 const express = require('express');	// express is basically a middleware ap to enhance for http requests
 const app = express();
@@ -18,6 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 // Define a route for http GET request to port 8080
 app.get('/{*any}', (request, response) => {
 	setHeader(request, response);
+	console.log(request)
+	console.log(response)
 	try {
 		var parameters = decodeURIComponent(request.originalUrl).substr(1);
 		if (parameters.endsWith("Openface.html") || parameters=="") { // file request?

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+</head>
+<body>
+      <form > <!-- doesnt reload the page and hides the menu -->
+                  <label for="Username">Username:</label><br>
+                  <input type="text" id="Username"  placeholder="John"><br>
+                  <button id = 'get'>GET</button>
+                  <button id = 'post'>POST</button>
+      </form>
+      <script>
+            const getBtn  =document.getElementById('get')
+            const postBtn  =document.getElementById('post')
+            const input = document.getElementById('Username')
+
+           const baseUrl = 'http://localhost:8081/';
+
+            getBtn.addEventListener('click', getinfo)
+            postBtn.addEventListener('click', postinfo)
+
+            async function getinfo(e) {
+                    e.preventDefault(); 
+                  
+                  const res = await fetch(baseUrl + 'info/james?key=hello',
+                  {
+                        method:'GET'
+                  })
+                  console.log(res)
+                  const data = await res.json()
+                  input.value = data.info 
+            }
+
+            async function postinfo(e) {
+                    e.preventDefault(); 
+                    if (input.value == '') {return}
+                  
+                  const res = await fetch(baseUrl,
+                  {
+                        method:'POST',
+                        headers: {
+                              "Content-Type": 'application/json'
+                        },
+                        body: JSON.stringify({
+                              parcel: input.value
+                        })
+                  })
+                  console.log(res)
+                  const data = await res.json()
+                  input.value = data.info 
+            }
+      
+      </script>
+
+</body>
+</html>
