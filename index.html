@@ -23,13 +23,57 @@
                   alert(data)
             }
       
-      function toggle_game_div() {
+      function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
             } else {
                   document.getElementById('game_window').style.display = 'none';    
             }
       }
+
+      let isXTurn = true; 
+      let x_num = 2;
+      let o_num = 1;
+       function Take_turn(button){
+       const gameSquare = button.parentElement;
+
+        // Create a new image element
+        const newImage = document.createElement('img');
+        newImage.style.maxWidth = '100%';
+        newImage.style.maxHeight = '100%'; 
+        newImage.style.display = 'block'; 
+    
+       
+       
+
+        if (isXTurn) {
+            newImage.src = 'X.png'; 
+            newImage.alt = 'X';
+            button.parentElement.id = x_num;
+        } else {
+            newImage.src = 'O.webp'; 
+            newImage.alt = 'O';
+            button.parentElement.id = o_num;
+        }
+         console.log(button.parentElement.id)
+        button.remove();
+        gameSquare.appendChild(newImage);
+         x_num += 2;
+         o_num += 2;
+       
+        isXTurn = !isXTurn;
+        Game_status_check()
+        
+       }
+
+      function Game_status_check(){
+            console.log("check")
+            const firstGameSquare = document.getElementsByName('1')[0];
+            var qq =  parseInt(firstGameSquare.id) +1
+
+            console.log(qq % 2)
+      }
+      
 </script>
 </head>
 <body>
@@ -60,15 +104,15 @@
                   O: USERNAME</h1>
             </div>
             <div id = "game_contain_squares"> 
-                  <div class = "game_squares" name = "1"></div>
-                  <div class = "game_squares" name = "2"></div>
-                  <div class = "game_squares" name = "3"></div>
-                  <div class = "game_squares" name = "4"></div>
-                  <div class = "game_squares" name = "5"></div>
-                  <div class = "game_squares" name = "6"></div>
-                  <div class = "game_squares" name = "7"></div>
-                  <div class = "game_squares" name = "8"></div>
-                  <div class = "game_squares" name = "9"></div>
+                  <div class = "game_squares" name = "1"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "2"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "3"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "4"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "5"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "6"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "7"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
             </div>
             <div width="100%" style= "">
                   <h1 onclick="toggle_game_div()" style="cursor: pointer;">LEAVE</h1>
