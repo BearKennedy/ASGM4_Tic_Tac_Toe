@@ -3,24 +3,24 @@
 <head>
 <link rel="stylesheet" type="text/css" href="asg4.css">
 <script>
-      async function addToDB(e) {
-                    const baseUrl = 'http://18.118.149.242:8081/';
-                    const input = document.getElementById('Username')
+      async function addToDB() {
+                    const baseUrl = 'http://'+window.location.hostname+':8081/';
+                    const input = document.getElementById('Username');
                     if (input.value == '') {return}
                   
                   const res = await fetch(baseUrl,
                   {
                         method:'POST',
                         headers: {
-                              "Content-Type": 'application/json'
+                              "Content-Type": 'application/x-www-form-urlencoded'
                         },
-                        body: JSON.stringify({
-                              parcel: input.value //input is username 
-                        })
-                  })
+                        body: new URLSearchParams({"username": input.value})
+                  });
                   console.log(res)
-                  const data = await res.json()
-                  input.value = data.info 
+                  //const data = await res.json()
+                  const data = await res.text();
+                  //input.value = data.info 
+                  alert(data)
             }
       
       function toggle_game_div() {
@@ -80,7 +80,7 @@
             
       </div>
 
-      <div id = "Open_menu" style="display: none"> <!-- remove 'none'-->
+      <div id = "Open_menu" style="display:absolute"> <!-- remove 'none'-->
             <div class="Open_menu-content">
                   <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
                   <h3>Created by Ryan and Bear:</h3>
@@ -117,7 +117,7 @@
                   <div id= "name_taken" class="err_msg hidden">That Username is already taken. Please try a new name</div>
                   <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
 
-                  <input type="submit" value="Submit" onclick="addToDB('436db')">
+                  <input type="submit" value="Submit" onclick="addToDB()">
                   </form> 
                   </div>
             </div>
