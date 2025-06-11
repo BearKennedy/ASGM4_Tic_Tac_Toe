@@ -11,6 +11,27 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
+/*
+// Get public ip address and use it to setup CORS
+var myIp=false;
+const { execSync } = require('child_process');
+try {
+  const result = execSync('curl ip-adresim.app');
+  myIp=result.toString();
+	console.log(myIp);
+} catch (error) {
+  console.error('Error executing command:', error);
+	exit();
+}
+
+const io = new Server(httpServer, {
+    cors: {
+	    origin: [myIp], // array of allowed origins e.g. domain names (with optional ports) to connect. origin: "*" means allow all origins
+        methods: ["GET", "POST"] // The allowed HTTP methods
+    }
+});
+*/
+
 app.get ('/{*any}', (req, res) => {
       const { dynamic } = req.params
       const { key }= req.query
@@ -20,15 +41,9 @@ app.get ('/{*any}', (req, res) => {
 
 app.post('/{*any}', (req, res) => {
     try {
-        console.log("WORK")
         setHeader(req, res);
-        console.log(req.body.username)
-        if (req.body.username=="test") {
-            res.send("TEST WORKED");
-        } else {
-            res.send("Post request not accounted for");
-        }
-        
+        userExistCheck(req, res);
+        returnIdlePlayers(req, res);
     } catch (error) {
       	res.send(error);
 	}
@@ -36,7 +51,109 @@ app.post('/{*any}', (req, res) => {
 
 app.listen(port, () => console.log(`we have a connection on port: ${port}`));
 
-function setHeader (request, response) {
-	response.setHeader('Access-Control-Allow-Credentials', 'true');
-    	if (request.headers.origin) response.setHeader('Access-Control-Allow-Origin', request.headers.origin);
+function setHeader(req, res) {
+	res.setHeader('Access-Control-Allow-Credentials', 'true');
+    	if (req.headers.origin) res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 }
+
+function userExistCheck(req, res) {
+    var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
+    dbCon.query(query, [req.body.username], function (error, result) { 
+        if (error) {
+            console.log(error);
+            res.send("DB access error");
+            return;
+        }
+
+        if (result.length!=0) {
+            console.log("name taken");
+            return; //user screen name does exist
+        }
+        
+        console.log("name not taken");
+		addUserToDatabase(req, res); //user screen name does not exist
+    });
+}
+
+function addUserToDatabase(req, res) {
+    var query="INSERT INTO logged_in_screenname SET screen_name = ?";
+    dbCon.query(query, [req.body.username], function (error, data, fields) {
+        if (error) {
+            console.log(error);
+            res.send("DB access error");
+            return;
+        }
+		res.send(req.body.username+" added to logged_in_screenname");
+    });
+}
+
+function returnTableRows(req, res) {
+    var query="SELECT screen_name FROM logged_in_screenname ";
+    dbCon.query(query, function (error, result) { 
+        var databasePrinted = "";
+
+        if (error) {
+            console.log(error);
+            res.send("DB access error");
+            return;
+        }
+        if (result.length==0) {
+            databasePrinted += "Nothing";
+        } else {
+            for (var i = 0; i < result.length; i++) {
+				databasePrinted += `<p> ${result[i].screen_name} </p>`;
+			}
+        }
+		res.send(databasePrinted);
+    });
+}
+
+function returnIdlePlayers(req, res) {
+    var query="SELECT screen_name FROM logged_in_screenname ";
+    dbCon.query(query, function (error, result) { 
+        var players = [];
+
+        if (error) {
+            console.log(error);
+            res.send("DB access error");
+            return;
+        }
+        if (result.length==0) {
+            return;
+        } else {
+            for(var i = 0; i < result.length; i++) {
+                players.push(`${result[i].screen_name}`);
+            }
+        }
+        console.log(players.toString());
+        var idles = [];
+// SELECT * FROM players WHERE x_player not in ('test', 'Taken', 'New Name', 'yes') OR  o_player not in ('test', 'Taken', 'New Name', 'yes');
+        query="SELECT * FROM players WHERE x_player NOT IN ('" + players.join("', '") + "') OR o_player NOT IN ('" + players.join("', '") + "')";
+        dbCon.query(query, function (error, result) { 
+            if (error) {
+                console.log(error);
+                res.send("DB access error");
+                return;
+            }
+            if (result.length!=0) {
+                for(var i = 0; i < result.length; i++) { 
+                    if(`${result[i].x_player}` != 'null') {
+                        idles.push(`${result[i].x_player}`);
+                    }
+                    if(`${result[i].o_player}` != 'null') {
+                       idles.push(`${result[i].o_player}`);
+                    }
+                    //console.log(idles.toString());
+                }
+            }
+
+            console.log(idles.toString());
+            res.send(idles.toString());
+        });
+    });
+    
+    
+}
+//INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
+//UPDATE players SET o_player = "player2" WHERE x_player = "player"; //when someone joins the match (as o)
+//DELETE FROM players WHERE x_player = "player"; //when the game is over
