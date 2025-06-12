@@ -31,18 +31,31 @@ const io = new Server(httpServer, {
     }
 });
 */
-
+/* Not using get calls, at least not yet
 app.get ('/{*any}', (req, res) => {
       const { dynamic } = req.params
       const { key }= req.query
       console.log (dynamic,key)
       res.status(200).json({ info: 'preset text' });
 })
+*/
 
-app.post('/{*any}', (req, res) => {
+//post call that adds a screenname to the database if it is not already being used
+app.post('/add_user/{*any}', (req, res) => {
     try {
         setHeader(req, res);
-        userExistCheck(req, res);
+        addUserExistCheck(req, res);
+        //returnIdlePlayers(req, res);
+    } catch (error) {
+      	res.send(error);
+	}
+})
+
+//post call that returns all idle users
+app.post('/idle_users/{*any}', (req, res) => {
+    try {
+        setHeader(req, res);
+        //addUserExistCheck(req, res);
         returnIdlePlayers(req, res);
     } catch (error) {
       	res.send(error);
@@ -56,7 +69,7 @@ function setHeader(req, res) {
     	if (req.headers.origin) res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 }
 
-function userExistCheck(req, res) {
+function addUserExistCheck(req, res) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
     dbCon.query(query, [req.body.username], function (error, result) { 
         if (error) {
@@ -66,7 +79,7 @@ function userExistCheck(req, res) {
         }
 
         if (result.length!=0) {
-            console.log("name taken");
+            res.send("name taken");
             return; //user screen name does exist
         }
         
@@ -148,7 +161,7 @@ function returnIdlePlayers(req, res) {
             }
 
             console.log(idles.toString());
-            res.send(idles.toString());
+            res.send("<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>");
         });
     });
     
