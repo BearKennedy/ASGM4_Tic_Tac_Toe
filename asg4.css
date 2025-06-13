@@ -12,6 +12,22 @@
     display: none;
 }
 
+.close-button { /* Add a class for the button */
+    position: absolute; /* keeps button in top right*/
+    top: 0px;
+    right: 0px;
+    margin: 25px;
+    height: 30px;
+    width: 30px;
+}
+
+/*button colors when hovered over*/
+.close-button:hover{
+    background-color: red;
+    color: #ffffff;
+    cursor: pointer;
+}
+
 /*Overlays and such*/
 
 /*For Help menu*/

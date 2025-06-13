@@ -54,6 +54,11 @@
             } else {
                   document.getElementById('game_window').style.display = 'none';    
             }
+
+            for(var i = 1; i < 10; i++) {
+                  document.getElementsByName(i + "")[0].removeAttribute("id");
+                  document.getElementsByName(i + "")[0].innerHTML = "<button class='board_button' onclick='Take_turn(this)'></button>";
+            }
       }
 
       let isXTurn = true; 
@@ -123,28 +128,28 @@
             if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
                   document.getElementById("result_menu").style.display = 'flex'; 
                   if(A_val % 2 == 0){
-                        document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
-                  else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        document.getElementById("result_text").innerHTML = "Red Wins";                  
+                  } else{
+                        document.getElementById("result_text").innerHTML= "BLUE WINS"
                   }
             }
             if ( E_val % 2 == (D_val % 2 )  && F_val % 2 == (D_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(D_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   }
                
             }
             if (  H_val % 2 == (G_val % 2 ) && I_val % 2 == (G_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(G_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   } 
                   
             } 
@@ -153,47 +158,47 @@
              if (  D_val % 2 == (A_val % 2 ) && G_val % 2 == (A_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(A_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   }
             } 
             if (  E_val % 2 == (B_val % 2 ) && H_val % 2 == (B_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(B_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   } 
             } 
             if (  F_val % 2 == (C_val % 2 ) && I_val % 2 == (C_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   }
             } 
 
             if (  E_val % 2 == (A_val % 2 ) && I_val % 2 == (A_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(A_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   } 
             } 
              if (  E_val % 2 == (C_val % 2 ) && G_val % 2 == (C_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   document.getElementById("result_text").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   document.getElementById("result_text").innerHTML= "BLUE WINS"
                   } 
             } 
             else{
@@ -299,7 +304,10 @@
             </div>
       </div>
       <div id="result_menu" style="display: none ">
-            <div id="result_menu-content"><button id="button-result" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button>YAAAY</div>
+            <div id="result_menu-content">
+            <button id="button-result" class = "close-button" onclick="document.getElementById('result_menu').style.display = 'none'">X</button>
+            <h1 id = "result_text"> </h1>
+            </div>
       </div>
 </body>
 </html>
