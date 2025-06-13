@@ -3,47 +3,26 @@
 <head>
 <link rel="stylesheet" type="text/css" href="asg4.css">
 <script>
-      //when the page is first loaded, all idle users are returned
-      updateIdleUsers();
-
       async function addToDB() {
-            const baseUrl = 'http://'+window.location.hostname+':8081/add_user/';
-            const input = document.getElementById('Username');
-            if (input.value == '') {return}
-            
-            const res = await fetch(baseUrl,
-            {
-                  method:'POST',
-                  headers: {
-                        "Content-Type": 'application/x-www-form-urlencoded'
-                  },
-                  body: new URLSearchParams({"username": input.value})
-            });
-            console.log(res)
-            //const data = await res.json()
-            const data = await res.text();
-            //input.value = data.info 
-            alert(data)
-      }
+                    const baseUrl = 'http://'+window.location.hostname+':8081/';
+                    const input = document.getElementById('Username');
+                    if (input.value == '') {return}
+                  
+                  const res = await fetch(baseUrl,
+                  {
+                        method:'POST',
+                        headers: {
+                              "Content-Type": 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({"username": input.value})
+                  });
+                  console.log(res)
+                  //const data = await res.json()
+                  const data = await res.text();
+                  //input.value = data.info 
+                  alert(data)
+            }
       
-      async function updateIdleUsers() {
-            const baseUrl = 'http://'+window.location.hostname+':8081/idle_users/';
-            
-            const res = await fetch(baseUrl,
-            {
-                  method:'POST',
-                  headers: {
-                        "Content-Type": 'application/x-www-form-urlencoded'
-                  },
-                  //body: new URLSearchParams({"username": input.value})
-            });
-            console.log(res);
-            //const data = await res.json()
-            const data = await res.text();
-            //input.value = data.info 
-            document.getElementById("idle").innerHTML = data;
-      }
-
       function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
@@ -55,39 +34,148 @@
       let isXTurn = true; 
       let x_num = 2;
       let o_num = 1;
-      function Take_turn(button){
-            const gameSquare = button.parentElement;
+       function Take_turn(button){
+       const gameSquare = button.parentElement;
+          
 
-            // Create a new image element
-            const newImage = document.createElement('img');
-            newImage.style.maxWidth = '100%';
-            newImage.style.maxHeight = '100%'; 
-            newImage.style.display = 'block'; 
-            if (isXTurn) {
+        // Create a new image element
+        const newImage = document.createElement('img');
+        newImage.style.maxWidth = '100%';
+        newImage.style.maxHeight = '100%'; 
+        newImage.style.display = 'block'; 
+    
+       
+       
+
+        if (isXTurn) {
             newImage.src = 'X.png'; 
             newImage.alt = 'X';
             button.parentElement.id = x_num;
-            } else {
+        } else {
             newImage.src = 'O.webp'; 
             newImage.alt = 'O';
             button.parentElement.id = o_num;
-            }
-            console.log(button.parentElement.id);
-            button.remove();
-            gameSquare.appendChild(newImage);
-            x_num += 2;
-            o_num += 2;
-            
-            isXTurn = !isXTurn;
-            Game_status_check();  
-      }
+        }
+         console.log(button.parentElement.id)
+        button.remove();
+        gameSquare.appendChild(newImage);
+         x_num += 2;
+         o_num += 2;
+       
+        isXTurn = !isXTurn;
+        Game_status_check()
+        
+       }
 
       function Game_status_check(){
-            console.log("check");
-            const firstGameSquare = document.getElementsByName('1')[0];
-            var qq =  parseInt(firstGameSquare.id) +1;
+            console.log("check")
+          
 
-            console.log(qq % 2);
+            const A = document.getElementsByName('1')[0];
+            const B = document.getElementsByName('2')[0];
+            const C = document.getElementsByName('3')[0];
+            const D = document.getElementsByName('4')[0];
+            const E = document.getElementsByName('5')[0];
+            const F = document.getElementsByName('6')[0];
+            const G = document.getElementsByName('7')[0];
+            const H = document.getElementsByName('8')[0];
+            const I = document.getElementsByName('9')[0];
+            
+
+            var A_val =  parseInt(A.id)
+            var B_val =  parseInt(B.id)
+            var C_val =  parseInt(C.id)
+
+            var D_val =  parseInt(D.id)
+            var E_val =  parseInt(E.id)
+            var F_val =  parseInt(F.id)
+
+            var G_val =  parseInt(G.id)
+            var H_val =  parseInt(H.id)
+            var I_val =  parseInt(I.id)
+           
+          //across 
+            if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
+                  document.getElementById("result_menu").style.display = 'flex'; 
+                  if(A_val % 2 == 0){
+                        document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  }
+            }
+            if ( E_val % 2 == (D_val % 2 )  && F_val % 2 == (D_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(D_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  }
+               
+            }
+            if (  H_val % 2 == (G_val % 2 ) && I_val % 2 == (G_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(G_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  } 
+                  
+            } 
+
+            //down
+             if (  D_val % 2 == (A_val % 2 ) && G_val % 2 == (A_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(A_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  }
+            } 
+            if (  E_val % 2 == (B_val % 2 ) && H_val % 2 == (B_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(B_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  } 
+            } 
+            if (  F_val % 2 == (C_val % 2 ) && I_val % 2 == (C_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(C_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  }
+            } 
+
+            if (  E_val % 2 == (A_val % 2 ) && I_val % 2 == (A_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(A_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  } 
+            } 
+             if (  E_val % 2 == (C_val % 2 ) && G_val % 2 == (C_val % 2 )){
+                  document.getElementById("result_menu").style.display = 'flex';
+                   if(C_val % 2 == 0){
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                  } 
+            } 
+            else{
+                  console.log("not a winner")
+            }
+
+            
       }
       
 </script>
@@ -105,7 +193,7 @@
       </table>
       
       <div id = "main_box">
-            <div id = "idle">
+            <div id = "idols">
                   idols
             </div>
             <div id = "avialable_games">
@@ -181,6 +269,9 @@
                   </form> 
                   </div>
             </div>
+      </div>
+      <div id="result_menu" style="display: none ">
+            <div id="result_menu-content"><button id="button-result" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button>YAAAY</div>
       </div>
 </body>
 </html>

@@ -154,3 +154,44 @@ input[type=submit]:hover{
  .board_button {
  background-color: rgb(255, 255, 255);
  }
+
+
+
+
+ #result_menu  {
+    position: fixed; /* Covers the entire viewport */
+    /*removes defaults*/
+    top: 0;
+    left: 0;
+    /* sets size of overlay */
+    width: 100%;
+    height: 100%;
+    /* makes background transparent */
+    background-color: rgba(0, 0, 0, .5); /* makes overlay semi-transparent  */
+    z-index: 10; /* Ensure it's on top of other everything else */
+    display: flex; /* centers the display*/
+    /*keeps things formated in the center*/
+    justify-content: center;
+    align-items: center;
+
+    /*default fonts*/
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#result_menu-content {
+     position: relative; /* lets us keep the button in the top right of the overlay not just the screen */
+    background-color: rgb(255, 255, 255); 
+    padding: 20px;
+    border-radius: 5px;
+    border: 3px solid black;
+    /*makes the overlay more square like*/
+    width: 75%;
+    height: 80%;
+    overflow-y: auto; /*lets the content scroll down */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers items horizontally */
+    margin-top: 20px; /* Add some space above the button */
+}
