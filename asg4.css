@@ -142,7 +142,7 @@ input[type=submit]:hover{
 }
 
 #game_info {
-    top: 100px;
+    flex: 1 1 0;
     width: 100%;
     height: 80px;
     border: 2px solid black;
@@ -151,6 +151,18 @@ input[type=submit]:hover{
     text-align: center;
     float: left;
 }
+
+.game_info_categories{
+    display: flex; 
+    height: 80px; 
+    width: calc(100%/3); 
+    align-items: center;
+    justify-content: center;
+    float: left;
+    text-align: center;
+}
+
+
  .board_button {
  background-color: rgb(255, 255, 255);
  }
