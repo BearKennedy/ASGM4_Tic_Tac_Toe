@@ -121,6 +121,36 @@ function returnTableRows(req, res) {
     });
 }
 
+function returnActiveGames(req, res) {
+    var query="SELECT * FROM players ";
+    dbCon.query(query, function (error, result) { 
+        var whatImReturning = "";
+
+        if (error) {
+            console.log(error);
+            res.send("DB access error");
+            return;
+        }
+        if (result.length==0) {
+            whatImReturning += "No Games";
+        } else {
+            for (var i = 0; i < result.length; i++) {
+				whatImReturning +=
+                `<tr>
+                        <th>
+                            ${result[i].x_player}
+                        </th>
+                        <th>
+                            ${result[i].o_player}
+                        </th>
+                </tr>`;
+			}
+        }
+		res.send(whatImReturning);
+    });
+}
+
+
 function returnIdlePlayers(req, res) {
     var query="SELECT screen_name FROM logged_in_screenname ";
     dbCon.query(query, function (error, result) { 
