@@ -2,7 +2,32 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="asg4.css">
+
+ <!-- Include socket.io client API from cdn //-->
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+
 <script>
+      var connectedSocket = null;
+
+      // TO-SERVER LOGIN screen-name 
+      // server: LOGIN-OK list-of-logged-in-screennames-and-status
+      // NEW-GAME screen-name choice-of-X-or-O
+      // server: UPDATED-USER-LIST-AND-STATUS list-of-screen-names status
+      // JOIN client’s-screen-name opponent’s-screen-name
+      // server: UPDATED-USER-LIST-AND-STATUS list-of-screen-names status
+      // PLAY X-player-screen-name O-player-screen-name (server to only the 2 players)
+
+      // Send message to Server. 
+	// Will create a connection if one is not already established
+	function sendToServer(messageType, message) {
+  		try {
+    			if (!connectedSocket) createSocket();
+    			connectedSocket.emit(messageType, message); // send msg to server
+  		} catch (err) {
+    			alert("System error 987: " + err + " contact us, or try again later");
+  		}
+	}
+      
       async function addToDB() {
                     const baseUrl = 'http://'+window.location.hostname+':8081/';
                     const input = document.getElementById('Username');
