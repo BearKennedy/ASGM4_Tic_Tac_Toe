@@ -7,7 +7,8 @@
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
 <script>
-      var connectedSocket = null;
+      /////////////////////// SOCKET_IO STUFF ///////////////
+     // USEFUL NOTES???
 
       // TO-SERVER LOGIN screen-name 
       // server: LOGIN-OK list-of-logged-in-screennames-and-status
@@ -16,9 +17,11 @@
       // JOIN client’s-screen-name opponent’s-screen-name
       // server: UPDATED-USER-LIST-AND-STATUS list-of-screen-names status
       // PLAY X-player-screen-name O-player-screen-name (server to only the 2 players)
-
       // Send message to Server. 
 	// Will create a connection if one is not already established
+
+
+     
 	function sendToServer(messageType, message) {
   		try {
     			if (!connectedSocket) createSocket();
@@ -27,6 +30,20 @@
     			alert("System error 987: " + err + " contact us, or try again later");
   		}
 	}
+      var connectedSocket = null;
+      function createSocket() {
+                  try {
+                        connectedSocket = io(window.location.hostname+":8081");
+                  } catch (err) {
+                        alert('connectedSocket create error, contact us');
+                        connectedSocket = null;
+                        return;
+                  }
+            }
+
+
+
+      //////////////////////////// DATA BASE STUFF ///////////////////////////
       
       async function addToDB() {
                     const baseUrl = 'http://'+window.location.hostname+':8081/';
@@ -41,10 +58,12 @@
                         },
                         body: new URLSearchParams({"username": input.value})
                   });
+
                   console.log(res)
                   //const data = await res.json()
                   const data = await res.text();
                   //input.value = data.info 
+                  connectedSocket.emit("TO-SERVER LOGIN screen-name", input.value)
                   alert(data)
             }
       
@@ -54,58 +73,48 @@
             } else {
                   document.getElementById('game_window').style.display = 'none';    
             }
-
-            newGame();
-
-            for(var i = 1; i < 10; i++) {
-                  document.getElementsByName(i + "")[0].removeAttribute("id");
-                  document.getElementsByName(i + "")[0].innerHTML = "<button class='board_button' onclick='Take_turn(this)'></button>";
-            }
       }
 
-      //on page load
-      let game = true;
       let isXTurn = true; 
+      let x_num = 2;
+      let o_num = 1;
+       function Take_turn(button){
+       const gameSquare = button.parentElement;
+          
 
-      function newGame() {
-            game = true;
-            isXTurn = true; 
-      }
+        // Create a new image element
+        const newImage = document.createElement('img');
+        newImage.style.maxWidth = '100%';
+        newImage.style.maxHeight = '100%'; 
+        newImage.style.display = 'block'; 
+    
+       
+       
 
-      function Take_turn(button){
-            const gameSquare = button.parentElement;
-            let x_num = 2;
-            let o_num = 1;
-            // Create a new image element
-            const newImage = document.createElement('img');
-            newImage.style.maxWidth = '100%';
-            newImage.style.maxHeight = '100%'; 
-            newImage.style.display = 'block'; 
-            if(game) {
-                  if (isXTurn) {
-                        newImage.src = 'X.png'; 
-                        newImage.alt = 'X';
-                        button.parentElement.id = x_num;
-                         document.getElementById("whos_turn").innerHTML = "O's TURN";
-                  } else {
-                        newImage.src = 'O.webp'; 
-                        newImage.alt = 'O';
-                        button.parentElement.id = o_num;
-                        document.getElementById("whos_turn").innerHTML = "X's TURN";
-                  }
-                  console.log(button.parentElement.id)
-                  button.remove();
-                  gameSquare.appendChild(newImage);
-                  x_num += 2;
-                  o_num += 2;
-                  
-                  isXTurn = !isXTurn;
-                  Game_status_check();
-            } 
-      }
+        if (isXTurn) {
+            newImage.src = 'X.png'; 
+            newImage.alt = 'X';
+            button.parentElement.id = x_num;
+        } else {
+            newImage.src = 'O.webp'; 
+            newImage.alt = 'O';
+            button.parentElement.id = o_num;
+        }
+         console.log(button.parentElement.id)
+        button.remove();
+        gameSquare.appendChild(newImage);
+         x_num += 2;
+         o_num += 2;
+       
+        isXTurn = !isXTurn;
+        Game_status_check()
+        
+       }
 
       function Game_status_check(){
             console.log("check")
+          
+
             const A = document.getElementsByName('1')[0];
             const B = document.getElementsByName('2')[0];
             const C = document.getElementsByName('3')[0];
@@ -133,84 +142,78 @@
             if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
                   document.getElementById("result_menu").style.display = 'flex'; 
                   if(A_val % 2 == 0){
-                        document.getElementById("result_text").innerHTML = "Red Wins";                  
-                  } else{
-                        document.getElementById("result_text").innerHTML= "BLUE WINS"
+                        document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
+                  else{
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   }
-                  game = false;
             }
             if ( E_val % 2 == (D_val % 2 )  && F_val % 2 == (D_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(D_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   }
-                  game = false;
+               
             }
             if (  H_val % 2 == (G_val % 2 ) && I_val % 2 == (G_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(G_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   } 
-                  game = false;
+                  
             } 
 
             //down
              if (  D_val % 2 == (A_val % 2 ) && G_val % 2 == (A_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(A_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   }
-                  game = false;
             } 
             if (  E_val % 2 == (B_val % 2 ) && H_val % 2 == (B_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(B_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   } 
-                  game = false;
             } 
             if (  F_val % 2 == (C_val % 2 ) && I_val % 2 == (C_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   }
-                  game = false;
             } 
 
             if (  E_val % 2 == (A_val % 2 ) && I_val % 2 == (A_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(A_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   } 
-                  game = false;
             } 
              if (  E_val % 2 == (C_val % 2 ) && G_val % 2 == (C_val % 2 )){
                   document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_text").innerHTML= "RED WINS"
+                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
                   }
                   else{
-                   document.getElementById("result_text").innerHTML= "BLUE WINS"
+                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   } 
-                  game = false;
             } 
             else{
                   console.log("not a winner")
@@ -219,6 +222,8 @@
             
       }
       
+      // runs connection as soon as script loads
+      createSocket();
 </script>
 </head>
 <body>
@@ -229,8 +234,8 @@
       </tr>
       <tr>
             <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
-                  <a style = "color: black; text-decoration: none;" href="#"  onclick="alert('help'); return false;">Help |</a>
-                  <a style = "color: black; text-decoration: none;" href="#" onclick="alert('logout'); return false;">Logout</a> 
+                  <a id= help_box  href="#"  onclick="alert('help'); return false;">Help |</a>
+                  <a id="help_box" href="#" onclick="alert('logout')"; return false;>Logout</a> 
             </th>
       </tr>
 
@@ -248,7 +253,7 @@
             <div id = "game_window" style="">
             <div id = "game_info"> 
                   <div class = "game_info_categories"> <h1 style="text-align: center">X: USERNAME</h1></div>
-                  <div class = "game_info_categories"> <h1 style="text-align: center" id = "whos_turn">X's TURN</h1></div>
+                  <div class = "game_info_categories"> <h1 style="text-align: center">X's TURN</h1></div>
                   <div class = "game_info_categories"> <h1 style="text-align: center">O: USERNAME</h1></div>
             </div>
             <div id = "game_contain_squares"> 
@@ -304,7 +309,7 @@
                   <div>
                   <form onsubmit="document.getElementById('Open_menu').style.display = 'none'; return false;"> <!-- doesnt reload the page and hides the menu -->
                   <label for="Username">Username:</label><br>
-                  <input type="text" id="Username"  placeholder="John" autocomplete="off"><br>
+                  <input type="text" id="Username"  placeholder="John"><br>
 
                   <div id= "name_taken" class="err_msg hidden">That Username is already taken. Please try a new name</div>
                   <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
@@ -315,10 +320,7 @@
             </div>
       </div>
       <div id="result_menu" style="display: none ">
-            <div id="result_menu-content">
-            <button id="button-result" class = "close-button" onclick="document.getElementById('result_menu').style.display = 'none'">X</button>
-            <h1 id = "result_text"> </h1>
-            </div>
+            <div id="result_menu-content"><button id="button-result" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button>YAAAY</div>
       </div>
 </body>
 </html>
