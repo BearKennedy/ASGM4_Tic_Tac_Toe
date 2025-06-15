@@ -207,19 +207,40 @@ input[type=submit]:hover{
 }
 
 #result_menu-content {
-     position: relative; /* lets us keep the button in the top right of the overlay not just the screen */
+   position: absolute;
+   
     background-color: rgb(255, 255, 255); 
     padding: 20px;
     border-radius: 5px;
     border: 3px solid black;
-    /*makes the overlay more square like*/
+    text-align: center;
     width: 75%;
-    height: 80%;
+    height: 15%;
+
     overflow-y: auto; /*lets the content scroll down */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+     display: flex; /* Enables Flexbox for the container */
+    justify-content: center; /* Centers items horizontally along the main axis */
+    align-items: center; 
+
 }
 .button-container {
     display: flex;
     justify-content: center; /* Centers items horizontally */
     margin-top: 20px; /* Add some space above the button */
 }
+
+#Result_close_button  {
+    background-image: linear-gradient(to right, rgb(255, 0, 0) , rgb(13, 182, 255));
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 10px;
+    color: white;
+    /*rounds corners of items*/
+    padding: 12px 12px;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 4px 2px;
+    /*sets cursor to look right for clicking*/
+    cursor: pointer;
+    
+   }

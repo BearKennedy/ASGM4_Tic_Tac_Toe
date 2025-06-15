@@ -67,6 +67,7 @@
                   alert(data)
             }
       
+            /////////////////////Game board actions//////////////////////////
       function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
@@ -87,9 +88,6 @@
         newImage.style.maxWidth = '100%';
         newImage.style.maxHeight = '100%'; 
         newImage.style.display = 'block'; 
-    
-       
-       
 
         if (isXTurn) {
             newImage.src = 'X.png'; 
@@ -107,20 +105,20 @@
          o_num += 2;
        
         isXTurn = !isXTurn;
+        
         Game_status_check()
         
        }
 
-      function Game_status_check(){
-            console.log("check")
-          
-
+      function Game_status_check(){  
             const A = document.getElementsByName('1')[0];
             const B = document.getElementsByName('2')[0];
             const C = document.getElementsByName('3')[0];
+
             const D = document.getElementsByName('4')[0];
             const E = document.getElementsByName('5')[0];
             const F = document.getElementsByName('6')[0];
+
             const G = document.getElementsByName('7')[0];
             const H = document.getElementsByName('8')[0];
             const I = document.getElementsByName('9')[0];
@@ -139,10 +137,13 @@
             var I_val =  parseInt(I.id)
            
           //across 
+
+          //this needs to be one if else case 
             if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
                   document.getElementById("result_menu").style.display = 'flex'; 
                   if(A_val % 2 == 0){
-                        document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
+                        X_wins();
+                  }//  document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
                   else{
                    document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
                   }
@@ -217,10 +218,45 @@
             } 
             else{
                   console.log("not a winner")
-            }
-
-            
+            } 
       }
+
+      function hideResultMenu() {
+    document.getElementById("result_menu").style.display = "none";
+      }
+      
+      function X_wins(){
+
+            const close_button = document.createElement('button')
+            close_button.id = 'Result_close_button'
+            close_button.innerHTML= "close"
+
+           
+            close_button.onclick = hideResultMenu
+            close_button.style.display = 'block';
+
+            const win_msg = document.createElement('p')
+            win_msg.innerHTML = "X WINS!!!!"
+
+           const c_photo = document.createElement('img')
+             c_photo.src = 'X.png'
+             c_photo.style.height = '50px'
+
+              const c_photo2 = document.createElement('img')
+             c_photo2.src = 'X.png'
+             c_photo2.style.height = '50px'
+
+             const brake = document.createElement('br')
+
+              document.getElementById("result_menu-content").appendChild(c_photo2)   
+             
+            document.getElementById("result_menu-content").appendChild(win_msg)   
+             document.getElementById("result_menu-content").appendChild(c_photo)
+              document.getElementById("result_menu-content").appendChild(brake)  
+              document.getElementById("result_menu-content").appendChild(close_button)  
+                
+      }                 
+
       
       // runs connection as soon as script loads
       createSocket();
@@ -244,10 +280,10 @@
       <div id = "main_box">
             <center>
             <div id = "idle">
-                  idols
+                  idle users:
             </div>
             <div id = "avialable_games">
-                  actives
+                  Active games
                   <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%;">
                         <tr>
                               <th>
@@ -260,6 +296,7 @@
                   </table>
                   <button onclick = "toggle_game_div()"><h1>JOIN</h1></button>
             </div>
+           
             
             <div id = "game_window" style="">
             <div id = "game_info"> 
@@ -276,7 +313,7 @@
                   <div class = "game_squares" name = "6"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "7"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "9"><buttonclass="board_button" onclick="Take_turn(this)"></button></div>
             </div>
             <div width="100%" style= "">
                   <h1 onclick="toggle_game_div()" style="cursor: pointer;">LEAVE</h1>
@@ -331,7 +368,8 @@
             </div>
       </div>
       <div id="result_menu" style="display: none ">
-            <div id="result_menu-content"><button id="button-result" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button>YAAAY</div>
+            <div id="result_menu-content">
+                 <!--- <button id="Result_close_button" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button></div>->
       </div>
 </body>
 </html>
