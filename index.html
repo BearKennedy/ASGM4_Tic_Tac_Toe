@@ -226,36 +226,42 @@
       }
       
       function X_wins(){
+    const rmc = document.getElementById("result_menu-content");
 
-            const close_button = document.createElement('button')
-            close_button.id = 'Result_close_button'
-            close_button.innerHTML= "close"
+    // Clear previous content from rmc to avoid duplication on multiple calls
+    
 
-           
-            close_button.onclick = hideResultMenu
-            close_button.style.display = 'block';
+    const space_div = document.createElement('div');
+    // You might want to add some styling to space_div if needed, e.g., space_div.style.marginBottom = '10px';
 
-            const win_msg = document.createElement('p')
-            win_msg.innerHTML = "X WINS!!!!"
+    const win_msg = document.createElement('p');
+    win_msg.innerHTML = "<img src='X.png' style='height: 50px; vertical-align: middle; margin-right: 5px;'>X WINS!!!!<img src='X.png' style='height: 50px; vertical-align: middle; margin-left: 5px;'>";
 
-           const c_photo = document.createElement('img')
-             c_photo.src = 'X.png'
-             c_photo.style.height = '50px'
+    const c_photo = document.createElement('img');
+    c_photo.src = 'X.png';
+    c_photo.style.height = '50px';
 
-              const c_photo2 = document.createElement('img')
-             c_photo2.src = 'X.png'
-             c_photo2.style.height = '50px'
+    const c_photo2 = document.createElement('img');
+    c_photo2.src = 'X.png';
+    c_photo2.style.height = '50px';
 
-             const brake = document.createElement('br')
+    
+    const close_button = document.createElement('button');
+    close_button.id = 'Result_close_button';
+    close_button.innerHTML = "close";
+    close_button.onclick = hideResultMenu;
+    close_button.style.display = 'flex';
+    close_button.style.marginLeft = '60px'
 
-              document.getElementById("result_menu-content").appendChild(c_photo2)   
-             
-            document.getElementById("result_menu-content").appendChild(win_msg)   
-             document.getElementById("result_menu-content").appendChild(c_photo)
-              document.getElementById("result_menu-content").appendChild(brake)  
-              document.getElementById("result_menu-content").appendChild(close_button)  
-                
-      }                 
+
+    
+
+    // Now append space_div to rmc
+    rmc.appendChild(win_msg);
+      win_msg.appendChild(close_button);
+    // Finally, append the close_button to rmc, which will place it below space_div
+    
+}
 
       
       // runs connection as soon as script loads
