@@ -136,84 +136,75 @@
             var H_val =  parseInt(H.id)
             var I_val =  parseInt(I.id)
            
+      
+            // game logic 
           //across 
-
           //this needs to be one if else case 
             if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
-                  document.getElementById("result_menu").style.display = 'flex'; 
                   if(A_val % 2 == 0){
                         X_wins();
-                  }//  document.getElementById("result_menu-content").innerHTML = '<button id="button-result" onclick="document.getElementById(\'result_menu\').style.display = \'none\'">CLOSE</button>Red Wins';                  }
+                  }            
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        O_wins()
                   }
             }
             if ( E_val % 2 == (D_val % 2 )  && F_val % 2 == (D_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
                    if(D_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                        X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        O_wins()
                   }
-               
             }
             if (  H_val % 2 == (G_val % 2 ) && I_val % 2 == (G_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
                    if(G_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                        X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
-                  } 
-                  
+                        O_wins()
+                  }      
             } 
 
             //down
              if (  D_val % 2 == (A_val % 2 ) && G_val % 2 == (A_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
-                   if(A_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  if(A_val % 2 == 0){
+                        X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        O_wins()
                   }
             } 
             if (  E_val % 2 == (B_val % 2 ) && H_val % 2 == (B_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
-                   if(B_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                  if(B_val % 2 == 0){
+                        X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        O_wins()
                   } 
             } 
             if (  F_val % 2 == (C_val % 2 ) && I_val % 2 == (C_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                        X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                        O_wins()
                   }
             } 
 
             if (  E_val % 2 == (A_val % 2 ) && I_val % 2 == (A_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
                    if(A_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   O_wins()
                   } 
             } 
              if (  E_val % 2 == (C_val % 2 ) && G_val % 2 == (C_val % 2 )){
-                  document.getElementById("result_menu").style.display = 'flex';
                    if(C_val % 2 == 0){
-                   document.getElementById("result_menu-content").innerHTML= "RED WINS"
+                   X_wins()
                   }
                   else{
-                   document.getElementById("result_menu-content").innerHTML= "BLUE WINS"
+                   O_wins()
                   } 
             } 
             else{
@@ -222,48 +213,107 @@
       }
 
       function hideResultMenu() {
-    document.getElementById("result_menu").style.display = "none";
+             document.getElementById("result_menu").style.display = "none";
       }
-      
+
+      function post_game_peek(){
+
+            document.getElementById("result_menu-content").style.display = "none";
+            document.getElementById("result_menu").style.backgroundColor = "rgba(0, 0, 0, 0)";
+
+            setTimeout(function() {
+            
+             document.getElementById("result_menu-content").style.display = "flex"
+             document.getElementById("result_menu").style.backgroundColor = "rgba(0, 0, 0, .5)";
+            }, 2000); // Delay of 2000 milliseconds (2 seconds)
+      }
+          function disable_game_table(){
+            document.querySelectorAll('.game_squares button').forEach(elem => {
+             elem.disabled = true;
+            });
+
+            function enable_game_table(){
+                  document.querySelectorAll('.game_squares button').forEach(elem => {
+             elem.disabled = false;
+            });
+
+            }
+      }
+
       function X_wins(){
-    const rmc = document.getElementById("result_menu-content");
+             
+            const rmc = document.getElementById("result_menu-content");
+            const result_menu = document.getElementById("result_menu");
+            result_menu.style.display = 'flex'; 
+            rmc.innerHTML = ''// resets everything so last result screen does not show in new game
 
-    // Clear previous content from rmc to avoid duplication on multiple calls
+            
+            const win_msg = document.createElement('h1');
+            win_msg.innerHTML = "<img src='X.png' style='height: 100px; vertical-align: middle;" +
+                                    "margin-right: 50px;'>" +
+                                    "X WINS!!!!" +
+                                    "<img src='X.png' style='height: 100px; vertical-align: middle;"+
+                                    "margin-left: 50px;'>";
+            
+            const close_button = document.createElement('button');
+            close_button.id = 'Result_close_button';
+            close_button.innerHTML = "Close";
+            close_button.style.width = "500px"
+            close_button.style.height = "75px"
+            close_button.onclick = hideResultMenu;
+            close_button.style.display = 'flex';
+            close_button.style.marginLeft = '25px'
+
+            const view_game_table = document.createElement('button');
+            view_game_table.id = 'Result_close_button';
+
+            view_game_table.onclick = post_game_peek
+            
+            view_game_table.innerHTML = "View game board ";
+
+            rmc.appendChild(win_msg);
+            win_msg.appendChild(close_button);
+            win_msg.appendChild(view_game_table)
+            disable_game_table()
+      }
+
+      function O_wins(){
+            const rmc = document.getElementById("result_menu-content");
+            const result_menu = document.getElementById("result_menu");
+            result_menu.style.display = 'flex'; 
+            rmc.innerHTML = '' // resets everything so last result screen does not show in new game
+
+            const win_msg = document.createElement('h1');
+            win_msg.innerHTML = "<img src='O.webp' style='height: 100px; vertical-align: middle;" +
+                                    "margin-right: 50px;'>" +
+                                    "O WINS!!!!" +
+                                    "<img src='O.webp' style='height: 100px; vertical-align: middle;"+
+                                    "margin-left: 50px;'>";
+            
+            const close_button = document.createElement('button');
+            close_button.id = 'Result_close_button';
+            close_button.innerHTML = "Close";
+            close_button.style.width = "500px"
+            close_button.style.height = "75px"
+            close_button.onclick = hideResultMenu;
+            close_button.style.display = 'flex';
+            close_button.style.marginLeft = '25px'
+
+            const view_game_table = document.createElement('button');
+            view_game_table.id = 'Result_close_button';
+
+            view_game_table.onclick = post_game_peek
+            
+            view_game_table.innerHTML = "View game board ";
+
+            rmc.appendChild(win_msg);
+            win_msg.appendChild(close_button);
+            win_msg.appendChild(view_game_table)
+
+            disable_game_table()
     
+      }
 
-    const space_div = document.createElement('div');
-    // You might want to add some styling to space_div if needed, e.g., space_div.style.marginBottom = '10px';
-
-    const win_msg = document.createElement('p');
-    win_msg.innerHTML = "<img src='X.png' style='height: 50px; vertical-align: middle; margin-right: 5px;'>X WINS!!!!<img src='X.png' style='height: 50px; vertical-align: middle; margin-left: 5px;'>";
-
-    const c_photo = document.createElement('img');
-    c_photo.src = 'X.png';
-    c_photo.style.height = '50px';
-
-    const c_photo2 = document.createElement('img');
-    c_photo2.src = 'X.png';
-    c_photo2.style.height = '50px';
-
-    
-    const close_button = document.createElement('button');
-    close_button.id = 'Result_close_button';
-    close_button.innerHTML = "close";
-    close_button.onclick = hideResultMenu;
-    close_button.style.display = 'flex';
-    close_button.style.marginLeft = '60px'
-
-
-    
-
-    // Now append space_div to rmc
-    rmc.appendChild(win_msg);
-      win_msg.appendChild(close_button);
-    // Finally, append the close_button to rmc, which will place it below space_div
-    
-}
-
-      
       // runs connection as soon as script loads
       createSocket();
 </script>
@@ -319,7 +369,7 @@
                   <div class = "game_squares" name = "6"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "7"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "9"><buttonclass="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
             </div>
             <div width="100%" style= "">
                   <h1 onclick="toggle_game_div()" style="cursor: pointer;">LEAVE</h1>
@@ -375,7 +425,12 @@
       </div>
       <div id="result_menu" style="display: none ">
             <div id="result_menu-content">
-                 <!--- <button id="Result_close_button" onclick="document.getElementById('result_menu').style.display = 'none'">CLOSE</button></div>->
+                
       </div>
 </body>
 </html>
+
+
+<!-- MENY NOTES TO NOTE 
+ #1 We have a function to give ckiclys back to buttons. we just dont have a spot to call it yet 
+ since we need to reset game board after each join and whatnot -->

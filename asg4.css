@@ -215,7 +215,7 @@ input[type=submit]:hover{
     border: 3px solid black;
     text-align: center;
     width: 75%;
-    height: 15%;
+    height: 35%;
 
     overflow-y: auto; /*lets the content scroll down */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -235,12 +235,21 @@ input[type=submit]:hover{
     border: 3px solid rgb(0, 0, 0);
     border-radius: 10px;
     color: white;
-    /*rounds corners of items*/
-    padding: 12px 12px;
-    text-decoration: none;
+    font-size : 30px; 
+    justify-content: center; /* Centers items horizontally along the main axis */
+    align-items: center; 
+    outline: black  solid 2px;
+    text-shadow: 2px 2px #000000;
+
     font-family: Arial, Helvetica, sans-serif;
-    margin: 4px 2px;
+    margin: 30px;
     /*sets cursor to look right for clicking*/
     cursor: pointer;
-    
    }
+   #Result_close_button:hover{
+    background-image: linear-gradient(to right, rgb(13, 182, 255) , rgb(255, 0, 0));
+    color: rgb(0, 0, 0);
+    box-shadow: rgba(32, 31, 31, 0.35) 0px 7px 10px;
+    text-shadow: 2px 2px #ffffff;
+    font-weight: 600;
+}
