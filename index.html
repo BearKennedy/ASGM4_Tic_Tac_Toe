@@ -110,7 +110,10 @@
         
        }
 
+       var move_count  = 0;
+
       function Game_status_check(){  
+            move_count ++
             const A = document.getElementsByName('1')[0];
             const B = document.getElementsByName('2')[0];
             const C = document.getElementsByName('3')[0];
@@ -123,41 +126,59 @@
             const H = document.getElementsByName('8')[0];
             const I = document.getElementsByName('9')[0];
             
+            // if game isint on turn 5 skip everything 
 
-            var A_val =  parseInt(A.id)
-            var B_val =  parseInt(B.id)
-            var C_val =  parseInt(C.id)
+            var A_val =  (parseInt(A.id) % 2)
+            var B_val =  (parseInt(B.id) % 2)
+            var C_val =  (parseInt(C.id) % 2)
 
-            var D_val =  parseInt(D.id)
-            var E_val =  parseInt(E.id)
-            var F_val =  parseInt(F.id)
+            console.log( "HIIIII ITS ME ")
+            console.log (C.iD === undefined)
 
-            var G_val =  parseInt(G.id)
-            var H_val =  parseInt(H.id)
-            var I_val =  parseInt(I.id)
+            var D_val =  (parseInt(D.id) % 2)
+            var E_val =  (parseInt(E.id) % 2)
+            var F_val =  (parseInt(F.id) % 2)
+
+            var G_val =  (parseInt(G.id) % 2)
+            var H_val =  (parseInt(H.id) % 2)
+            var I_val =  (parseInt(I.id) % 2)
            
       
-            // game logic 
-          //across 
+          
           //this needs to be one if else case 
-            if (  B_val % 2 == (A_val % 2 ) && C_val % 2 ==(A_val % 2 )) {
-                  if(A_val % 2 == 0){
+
+          //const A_defined = !(A === undefined)
+          //const B_defined = !(B === undefined)
+          //const C_defined = !(C === undefined)
+
+
+        // if (A_defined && B_defined) && (B_val % 2) != (A_val % 2 )) ABC = False 
+        // if  (A_defined && C_defined) &&  (A_val % 2) != (C_val % 2 )) ABC == FALSE
+        // if (B_defined && C_defined) && (B_val % 2) != (C_val % 2 )) ABC == FALSE
+        //SUDOKU!!!!!!
+         
+      //}
+
+        // game logic 
+          //across 
+            if (( B_val == A_val) && (C_val == A_val  )) {
+                  if(A_val  == 0){
                         X_wins();
                   }            
                   else{
                         O_wins()
                   }
             }
-            if ( E_val % 2 == (D_val % 2 )  && F_val % 2 == (D_val % 2 )){
-                   if(D_val % 2 == 0){
+            else if (( E_val == D_val) && (F_val == D_val )){
+                   if(D_val == 0){
                         X_wins()
                   }
                   else{
                         O_wins()
                   }
             }
-            if (  H_val % 2 == (G_val % 2 ) && I_val % 2 == (G_val % 2 )){
-                   if(G_val % 2 == 0){
+            else if (( H_val  == G_val  ) && (I_val == G_val % 2 )){
+                   if(G_val == 0){
                         X_wins()
                   }
                   else{
@@ -166,41 +187,41 @@
             } 
 
             //down
-             if (  D_val % 2 == (A_val % 2 ) && G_val % 2 == (A_val % 2 )){
-                  if(A_val % 2 == 0){
+            else if (( D_val == A_val ) && (G_val  == A_val  )){
+                  if(A_val == 0){
                         X_wins()
                   }
                   else{
                         O_wins()
                   }
             } 
-            if (  E_val % 2 == (B_val % 2 ) && H_val % 2 == (B_val % 2 )){
-                  if(B_val % 2 == 0){
+            else if (( E_val == B_val ) && (H_val  == B_val % 2 )){
+                  if(B_val == 0){
                         X_wins()
                   }
                   else{
                         O_wins()
                   } 
             } 
-            if (  F_val % 2 == (C_val % 2 ) && I_val % 2 == (C_val % 2 )){
-                   if(C_val % 2 == 0){
+            else if (( F_val  == C_val ) && (I_val == C_val )){
+                   if(C_val == 0){
                         X_wins()
                   }
                   else{
                         O_wins()
                   }
             } 
-
-            if (  E_val % 2 == (A_val % 2 ) && I_val % 2 == (A_val % 2 )){
-                   if(A_val % 2 == 0){
+            // diagonal
+            else if (( E_val == A_val ) && (I_val == A_val % 2 )){
+                   if(A_val == 0){
                    X_wins()
                   }
                   else{
                    O_wins()
                   } 
             } 
-             if (  E_val % 2 == (C_val % 2 ) && G_val % 2 == (C_val % 2 )){
-                   if(C_val % 2 == 0){
+            else if (( E_val  == C_val ) && (G_val  == C_val % 2 )){
+                   if(C_val == 0){
                    X_wins()
                   }
                   else{
@@ -210,6 +231,7 @@
             else{
                   console.log("not a winner")
             } 
+            console.log(move_count)
       }
 
       function hideResultMenu() {
