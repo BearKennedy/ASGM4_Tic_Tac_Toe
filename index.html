@@ -207,9 +207,9 @@
             if ((C_defined && G_defined) && C_val  != G_val ) CEG = false
             if ((E_defined && G_defined) && E_val  != G_val ) CEG = false
 
-
+/*
             const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
-            
+
                   let trueCount = 0;
                   for (let i = 0; i < conditions.length; i++) {
                   if (!conditions[i]) {
@@ -221,14 +221,16 @@
                   if (trueCount >= 7){
                         draw()
                   }
-
+*/
 
       // game logic 
             //across 
             // keep this in its the old draw method 
-           /* if (!ABC && !DEF && !GHI && !ADG && !BEH && !CFI &&!AEI && !CEG ){
+
+            // catches error when last move results in a win, 
+            if (!ABC && !DEF && !GHI && !ADG && !BEH && !CFI &&!AEI && !CEG ){
                   console.log("ITS A DRAWWW")
-            }*/
+            }
 
             if (ABC){
                   if (( B_val == A_val) && (C_val == A_val  )) {
