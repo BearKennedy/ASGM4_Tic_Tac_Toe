@@ -66,6 +66,28 @@
                   connectedSocket.emit("TO-SERVER LOGIN screen-name", input.value)
                   alert(data)
             }
+            
+      async function test() {
+            const baseUrl = 'http://'+window.location.hostname+':8081/test/';
+            
+            const res = await fetch(baseUrl,
+            {
+                  method:'POST',
+                  headers: {
+                        "Content-Type": 'application/x-www-form-urlencoded'
+                  },
+                  //body: new URLSearchParams({"username": input.value})
+            });
+
+            console.log(res)
+            //const data = await res.json()
+            const data = await res.text();
+            //input.value = data.info 
+            //connectedSocket.emit("TO-SERVER LOGIN screen-name", input.value)
+            //alert(data)
+            
+            document.getElementById("actives").innerHTML += data;
+      }
       
             /////////////////////Game board actions//////////////////////////
       function toggle_game_div(button) {
@@ -94,10 +116,12 @@
             newImage.src = 'X.png'; 
             newImage.alt = 'X';
             button.parentElement.id = x_num;
+            document.getElementById("whoTurn").innerHTML = "O's Turn";
         } else {
             newImage.src = 'O.webp'; 
             newImage.alt = 'O';
             button.parentElement.id = o_num;
+            document.getElementById("whoTurn").innerHTML = "X's Turn";
         }
         console.log(button.parentElement.id)
         button.remove();
@@ -462,6 +486,9 @@
 
       // runs connection as soon as script loads
       createSocket();
+
+      // runs a call to see all active games
+      test();
 </script>
 </head>
 <body>
@@ -472,7 +499,7 @@
       </tr>
       <tr>
             <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
-                  <a id= help_box  href="#"  onclick="alert('help'); return false;">Help |</a>
+                  <a id= help_box  href="#"  onclick="test(); return false;">Help |</a>
                   <a id="help_box" href="#" onclick="alert('logout')"; return false;>Logout</a> 
             </th>
       </tr>
@@ -486,13 +513,13 @@
             </div>
             <div id = "avialable_games">
                   Active games
-                  <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%;">
+                  <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%; ">
                         <tr>
-                              <th>
-                                    test
+                              <th style = "padding: 10px; border-bottom: 4px solid black; margin = -4px">
+                                    X-Player
                               </th>
-                              <th>
-                                    test
+                              <th style = "padding: 10px; border-bottom: 4px solid black; margin = -4px">
+                                    O-Player
                               </th>
                         </tr>
                   </table>
@@ -503,7 +530,7 @@
             <div id = "game_window" style="">
             <div id = "game_info"> 
                   <div class = "game_info_categories"> <h1 style="text-align: center">X: USERNAME</h1></div>
-                  <div class = "game_info_categories"> <h1 style="text-align: center">X's TURN</h1></div>
+                  <div class = "game_info_categories"> <h1 style="text-align: center" id = "whoTurn">X's TURN</h1></div>
                   <div class = "game_info_categories"> <h1 style="text-align: center">O: USERNAME</h1></div>
             </div>
             <div id = "game_contain_squares"> 

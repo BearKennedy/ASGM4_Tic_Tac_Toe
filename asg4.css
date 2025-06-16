@@ -253,3 +253,7 @@ input[type=submit]:hover{
     text-shadow: 2px 2px #ffffff;
     font-weight: 600;
 }
+
+.active_table {
+    padding: 10px;
+}

@@ -163,7 +163,7 @@ app.get ('/{*any}', (req, res) => {
 //post call that adds a screenname to the database if it is not already being used
 
 // changed from // app.post('/add_user/{*any}', (req, res) => {
-app.post('/', (req, res) => {
+app.post('/notme/', (req, res) => {
     try {
         setHeader(req, res);
         addUserExistCheck(req, res);
@@ -174,11 +174,12 @@ app.post('/', (req, res) => {
 })
 
 //post call that returns all idle users
-app.post('/idle_users/{*any}', (req, res) => {
+app.post('/test/{*any}', (req, res) => {
     try {
         setHeader(req, res);
         //addUserExistCheck(req, res);
-        returnIdlePlayers(req, res);
+        //returnIdlePlayers(req, res);
+        returnActiveGames(req, res);
     } catch (error) {
         res.send(error);
     }
@@ -258,17 +259,30 @@ function returnActiveGames(req, res) {
             whatImReturning += "No Games";
         } else {
             for (var i = 0; i < result.length; i++) {
-				whatImReturning +=
-                `<tr>
-                        <th>
-                            ${result[i].x_player}
-                        </th>
-                        <th>
-                            ${result[i].o_player}
-                        </th>
-                </tr>`;
+                if(result[i].x_player == null) { 
+                    whatImReturning +=
+                    `<tr>
+                            <th style = "padding: 10px">
+                                <button id = "join_${result[i].o_player}">JOIN</button>
+                            </th style = "padding: 10px">
+                            <th>
+                                ${result[i].o_player}
+                            </th>
+                    </tr>`;
+                } else if (result[i].o_player == null) {
+                    whatImReturning +=
+                    `<tr>
+                            <th style = "padding: 10px">
+                                ${result[i].x_player}
+                            </th>
+                            <th style = "padding: 10px">
+                                <button id = "join_${result[i].x_player}">JOIN</button>
+                            </th>
+                    </tr>`; 
+                }
 			}
         }
+        //console.log(whatImReturning);
 		res.send(whatImReturning);
     });
 }
