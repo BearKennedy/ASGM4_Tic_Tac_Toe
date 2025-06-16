@@ -1,5 +1,5 @@
 // SocketIO with node.js example
-// By. A. Ikeji
+// By. A. Ikeji + us
 //
 // Note: All the require('...') used may need to be installed if not already installed 
 // on your server. To install, use something like   npm install cors  or npm install -g cors  on the command line
@@ -40,19 +40,6 @@ const io = new Server(httpServer, {
     }
 });
 
-
-// Http get requests are handled here
-// To use the node http server, the url is myId:portNumber/file e.g. http://1.2.3.4:8080/index.html
-app.get('/{*any}', function (request, response) {
-	// If request is for a file ending in one of these, then send the file
-	//if (request.url.endsWith(".css") || request.url.endsWith(".png") || request.url.endsWith(".ico") || request.url.endsWith(".js") || request.url.endsWith("index.html")) {
-	if (request.url.endsWith("index.html")||request.url.endsWith(".css")||request.url.endsWith(".js")||request.url.endsWith(".png")||request.url.endsWith(".webp")) {
-                response.sendFile(__dirname + request.url);
-        }
-	else response.send("<h1>404 - Unknown SAD  request</h1>");
-});
-
-
 // Defie the handlers for socket-io connection relation events
 io.on('connection', (socket) => {
     console.log(`Client connected: ${socket.id}`);
@@ -67,15 +54,13 @@ io.on('connection', (socket) => {
 		// Broadcast the message to all clients (including sender client)
 
         // AND THIS IS HOW WE SEND
-	    	case "broadcastAllPlusMe": io.emit("general-msg","all plus me "+data.message); break;
+	    	case "broadcastAllPlusMe": io.emit("general-msg",data.message); break;
 
 		// Broadcast the message to all clients (minus sender client)
 	    	case "broadcastAllMinusMe": socket.broadcast.emit("general-msg","All minus me "+data.message); break;
 
 		// Broadcast the message to ONLY the sender client
-	    	case "ResendToMe": socket.emit("general-msg","Resend bk to me bAHAHAHAHAHHAHHAHA"+data.message); break;
-
-            
+	    	case "ResendToMe": socket.emit("general-msg","Resend bk to me "+data.message); break;
 	    }
     });
 
@@ -94,8 +79,17 @@ io.on('connection', (socket) => {
         console.log(`Client disconnected: ${socket.id}`);
     });
 
-    socket.on('TO-SERVER LOGIN screen-name', (screenName) => 
-    { console.log('Server received login request for:', screenName); });  
+    socket.on('TO-SERVER LOGIN', (screenName) => { 
+        console.log('Server received login request for:', screenName); 
+        addUserExistCheck(screenName); // adds the name if it is not taken
+        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK list-of-logged-in-screennames-and-status"}); 
+    });  
+
+    socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
+        console.log('Server received new game request for:', data.screen_name); 
+        newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
+        socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS list-of-screen-names status"}); 
+    });  
 
 });
     
@@ -106,18 +100,10 @@ httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-// SO
-
 /* we need to add the functions create port and then set it up so we can use it BUT it works
 issue is that css is not loaded with page when you go through the port, which is strange....*/
 
-
-
-
 /////////////////////// SQL STUFF //////////////////////////////
-
-
-
 const express = require('express');	// express is basically a middleware ap to enhance for http requests
 const { stat } = require('fs');
 
@@ -131,121 +117,55 @@ app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
-/*
-// Get public ip address and use it to setup CORS
-var myIp=false;
-const { execSync } = require('child_process');
-try {
-  const result = execSync('curl ip-adresim.app');
-  myIp=result.toString();
-    console.log(myIp);
-} catch (error) {
-  console.error('Error executing command:', error);
-    exit();
-}
 
-const io = new Server(httpServer, {
-    cors: {
-        origin: [myIp], // array of allowed origins e.g. domain names (with optional ports) to connect. origin: "*" means allow all origins
-        methods: ["GET", "POST"] // The allowed HTTP methods
-    }
-});
-*/
-/* Not using get calls, at least not yet
-app.get ('/{*any}', (req, res) => {
-      const { dynamic } = req.params
-      const { key }= req.query
-      console.log (dynamic,key)
-      res.status(200).json({ info: 'preset text' });
-})
-*/
+//app.listen(port, () => console.log(`we have a connection on port: ${port}`));
 
-//post call that adds a screenname to the database if it is not already being used
-
-// changed from // app.post('/add_user/{*any}', (req, res) => {
-app.post('/notme/', (req, res) => {
-    try {
-        setHeader(req, res);
-        addUserExistCheck(req, res);
-        //returnIdlePlayers(req, res);
-    } catch (error) {
-        res.send(error);
-    }
-})
-
-//post call that returns all idle users
-app.post('/test/{*any}', (req, res) => {
-    try {
-        setHeader(req, res);
-        //addUserExistCheck(req, res);
-        //returnIdlePlayers(req, res);
-        returnActiveGames(req, res);
-    } catch (error) {
-        res.send(error);
-    }
-})
-
-app.listen(port, () => console.log(`we have a connection on port: ${port}`));
-
-function setHeader(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-        if (req.headers.origin) res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-}
-
-function addUserExistCheck(req, res) {
+function addUserExistCheck(screenName) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
-    dbCon.query(query, [req.body.username], function (error, result) { 
+    dbCon.query(query, [screenName], function (error, result) { 
         if (error) {
             console.log(error);
-            res.send("DB access error");
+            console.log("DB access error");
             return;
         }
 
         if (result.length!=0) {
-            res.send("name taken");
+            console.log("name taken");
             ////  HERE IS THE EMMIT
-            return false; //user screen name does exist
+            return; //user screen name does exist
         }
         
         console.log("name not taken");
-        addUserToDatabase(req, res); //user screen name does not exist
+        addUserToDatabase(screenName); //user screen name does not exist
     });
 }
 
-function addUserToDatabase(req, res) {
+function addUserToDatabase(screenName) {
     var query="INSERT INTO logged_in_screenname SET screen_name = ?";
-    dbCon.query(query, [req.body.username], function (error, data, fields) {
+    dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
-            res.send("DB access error");
+            //res.send("DB access error");
             return;
         }
-        res.send(req.body.username+" added to logged_in_screenname");
+        //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
 
-function returnTableRows(req, res) {
-    var query="SELECT screen_name FROM logged_in_screenname ";
-    dbCon.query(query, function (error, result) { 
-        var databasePrinted = "";
-
+function newGame(screenName, letterChoice) {
+    var query="INSERT INTO players SET " + letterChoice + "_player = ?";
+    dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
-            res.send("DB access error");
+            console.log("DB access error");
             return;
         }
-        if (result.length==0) {
-            databasePrinted += "Nothing";
-        } else {
-            for (var i = 0; i < result.length; i++) {
-                databasePrinted += `<p> ${result[i].screen_name} </p>`;
-            }
-        }
-        res.send(databasePrinted);
+        //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
 
-function returnActiveGames(req, res) {
+
+function returnActiveGames() {
     var query="SELECT * FROM players ";
     dbCon.query(query, function (error, result) { 
         var whatImReturning = "";
@@ -283,19 +203,19 @@ function returnActiveGames(req, res) {
 			}
         }
         //console.log(whatImReturning);
-		res.send(whatImReturning);
+		res.send(whatImReturning); //somehow return
     });
 }
 
 
-function returnIdlePlayers(req, res) {
+function returnIdlePlayers() {
     var query="SELECT screen_name FROM logged_in_screenname ";
     dbCon.query(query, function (error, result) { 
         var players = [];
 
         if (error) {
             console.log(error);
-            res.send("DB access error");
+            console.log("DB access error");
             return;
         }
         if (result.length==0) {
@@ -307,12 +227,11 @@ function returnIdlePlayers(req, res) {
         }
         console.log(players.toString());
         var idles = [];
-// SELECT * FROM players WHERE x_player not in ('test', 'Taken', 'New Name', 'yes') OR  o_player not in ('test', 'Taken', 'New Name', 'yes');
         query="SELECT * FROM players WHERE x_player NOT IN ('" + players.join("', '") + "') OR o_player NOT IN ('" + players.join("', '") + "')";
         dbCon.query(query, function (error, result) { 
             if (error) {
                 console.log(error);
-                res.send("DB access error");
+                console.log("DB access error");
                 return;
             }
             if (result.length!=0) {
@@ -328,7 +247,7 @@ function returnIdlePlayers(req, res) {
             }
 
             console.log(idles.toString());
-            res.send("<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>");
+            res.send("<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>"); //somehow return
         });
     });
     
