@@ -79,6 +79,7 @@
       let isXTurn = true; 
       let x_num = 2;
       let o_num = 1;
+      var move_count  = 0;
        function Take_turn(button){
        const gameSquare = button.parentElement;
           
@@ -98,22 +99,35 @@
             newImage.alt = 'O';
             button.parentElement.id = o_num;
         }
-         console.log(button.parentElement.id)
+        console.log(button.parentElement.id)
         button.remove();
         gameSquare.appendChild(newImage);
          x_num += 2;
          o_num += 2;
        
         isXTurn = !isXTurn;
-        
-        Game_status_check()
-        
+
+        move_count ++
+            
+            if (move_count >= 4){
+                 Game_status_check()
+            }
        }
 
-       var move_count  = 0;
+            var ABC = true
+            var DEF = true
+            var GHI = true
 
-      function Game_status_check(){  
-            move_count ++
+            var ADG = true
+            var BEH = true
+            var CFI = true
+
+            var AEI =  true
+            var CEG = true 
+            
+      function Game_status_check(){
+            console.log (ABC)
+            
             const A = document.getElementsByName('1')[0];
             const B = document.getElementsByName('2')[0];
             const C = document.getElementsByName('3')[0];
@@ -126,14 +140,9 @@
             const H = document.getElementsByName('8')[0];
             const I = document.getElementsByName('9')[0];
             
-            // if game isint on turn 5 skip everything 
-
             var A_val =  (parseInt(A.id) % 2)
             var B_val =  (parseInt(B.id) % 2)
             var C_val =  (parseInt(C.id) % 2)
-
-            console.log( "HIIIII ITS ME ")
-            console.log (C.iD === undefined)
 
             var D_val =  (parseInt(D.id) % 2)
             var E_val =  (parseInt(E.id) % 2)
@@ -142,98 +151,176 @@
             var G_val =  (parseInt(G.id) % 2)
             var H_val =  (parseInt(H.id) % 2)
             var I_val =  (parseInt(I.id) % 2)
-           
-      
-          
-          //this needs to be one if else case 
 
-          //const A_defined = !(A === undefined)
-          //const B_defined = !(B === undefined)
-          //const C_defined = !(C === undefined)
+            const A_defined = !(isNaN(A_val));
+            const B_defined = !(isNaN(B_val));
+            const C_defined = !(isNaN(C_val));
+
+            const D_defined = !(isNaN(D_val));
+            const E_defined = !(isNaN(E_val));
+            const F_defined = !(isNaN(F_val));
+
+            const G_defined = !(isNaN(G_val));
+            const H_defined = !(isNaN(H_val));
+            const I_defined = !(isNaN(I_val));
 
 
-        // if (A_defined && B_defined) && (B_val % 2) != (A_val % 2 )) ABC = False 
-        // if  (A_defined && C_defined) &&  (A_val % 2) != (C_val % 2 )) ABC == FALSE
-        // if (B_defined && C_defined) && (B_val % 2) != (C_val % 2 )) ABC == FALSE
-        //SUDOKU!!!!!!
-         
-      //}
+            if ((A_defined && B_defined) && A_val  != B_val ) ABC = false 
+            if ((A_defined && C_defined) && A_val  != C_val ) ABC = false
+            if ((B_defined && C_defined) && B_val  != C_val ) ABC = false
+            console.log("ABC:")
+            console.log(ABC)
+            if ((E_defined && D_defined) && E_val  != D_val ) DEF = false 
+            if ((E_defined && F_defined) && E_val  != F_val ) DEF = false
+            if ((D_defined && F_defined) && D_val  != F_val ) DEF = false
+            console.log("DEF:")
+            console.log(DEF)
+            if ((G_defined && H_defined) && G_val  != H_val ) GHI = false 
+            if ((G_defined && I_defined) && G_val  != I_val ) GHI = false
+            if ((H_defined && I_defined) && H_val  != I_val ) GHI = false
+             console.log("GHI:")
+            console.log(GHI)
 
-        // game logic 
-          //across 
-            if (( B_val == A_val) && (C_val == A_val  )) {
-                  if(A_val  == 0){
-                        X_wins();
-                  }            
-                  else{
-                        O_wins()
+
+            //DOWN
+            if ((A_defined && D_defined) && A_val  != D_val ) ADG = false 
+            if ((A_defined && G_defined) && A_val  != G_val ) ADG = false
+            if ((D_defined && G_defined) && D_val  != G_val ) ADG = false
+             console.log("ADG:")
+            console.log(ADG)
+            if ((B_defined && E_defined) && B_val  != E_val ) BEH = false 
+            if ((B_defined && H_defined) && B_val  != H_val ) BEH = false
+            if ((E_defined && H_defined) && E_val  != H_val ) BEH = false
+             console.log("BEH:")
+            console.log(BEH)
+            if ((C_defined && F_defined) && C_val  != F_val ) CFI = false 
+            if ((C_defined && I_defined) && C_val  != I_val ) CFI = false
+            if ((F_defined && I_defined) && F_val  != I_val ) CFI = false
+            console.log("CFI:")
+            console.log(CFI)
+            if ((A_defined && E_defined) && A_val  != E_val ) AEI = false 
+            if ((A_defined && I_defined) && A_val  != I_val ) AEI = false
+            if ((E_defined && I_defined) && E_val  != I_val ) AEI = false
+            console.log("AEI:")
+            console.log(CEG)  
+            if ((C_defined && E_defined) && C_val  != E_val ) CEG = false 
+            if ((C_defined && G_defined) && C_val  != G_val ) CEG = false
+            if ((E_defined && G_defined) && E_val  != G_val ) CEG = false
+
+
+            const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
+            
+                  let trueCount = 0;
+                  for (let i = 0; i < conditions.length; i++) {
+                  if (!conditions[i]) {
+                        trueCount++;
+                        console.log("LICK")
+                        console.log(trueCount)
+                  }
+                  }
+                  if (trueCount >= 7){
+                        draw()
+                  }
+
+
+      // game logic 
+            //across 
+            // keep this in its the old draw method 
+           /* if (!ABC && !DEF && !GHI && !ADG && !BEH && !CFI &&!AEI && !CEG ){
+                  console.log("ITS A DRAWWW")
+            }*/
+
+            if (ABC){
+                  if (( B_val == A_val) && (C_val == A_val  )) {
+                        if(A_val  == 0){
+                              X_wins();
+                        }            
+                        else{
+                              O_wins()
+                        }
                   }
             }
-            else if (( E_val == D_val) && (F_val == D_val )){
-                   if(D_val == 0){
-                        X_wins()
-                  }
-                  else{
-                        O_wins()
+             if(DEF){ 
+                  if (( E_val == D_val) && (F_val == D_val )){
+                        if(D_val == 0){
+                              X_wins()
+                        }
+                        else{
+                              O_wins()
+                        }
                   }
             }
-            else if (( H_val  == G_val  ) && (I_val == G_val % 2 )){
-                   if(G_val == 0){
-                        X_wins()
-                  }
-                  else{
-                        O_wins()
+
+             if(GHI){
+                  if (( H_val  == G_val  ) && (I_val == G_val )){
+                        if(G_val == 0){
+                              X_wins()
+                        }
+                        else{
+                              O_wins()
+                        }      
                   }      
             } 
-
             //down
-            else if (( D_val == A_val ) && (G_val  == A_val  )){
-                  if(A_val == 0){
-                        X_wins()
+             if(ADG){
+                  if (( D_val == A_val ) && (G_val  == A_val  )){
+
+                        if(A_val == 0){
+                              
+                              X_wins()
+                        }
+                        else{
+                              O_wins()
+                        }
                   }
-                  else{
-                        O_wins()
+            }
+             if (BEH){
+                  if (( E_val == B_val ) && (H_val  == B_val )){
+                        if(B_val == 0){
+                              X_wins()
+                        }
+                        else{
+                              O_wins()
+                        } 
                   }
             } 
-            else if (( E_val == B_val ) && (H_val  == B_val % 2 )){
-                  if(B_val == 0){
-                        X_wins()
-                  }
-                  else{
-                        O_wins()
-                  } 
-            } 
-            else if (( F_val  == C_val ) && (I_val == C_val )){
-                   if(C_val == 0){
-                        X_wins()
-                  }
-                  else{
-                        O_wins()
+             if(CFI){
+                  if (( F_val  == C_val ) && (I_val == C_val )){
+                        if(C_val == 0){
+                              X_wins()
+                        }
+                        else{
+                              O_wins()
+                        }
                   }
             } 
             // diagonal
-            else if (( E_val == A_val ) && (I_val == A_val % 2 )){
-                   if(A_val == 0){
-                   X_wins()
+             if (AEI){
+                  if (( E_val == A_val ) && (I_val == A_val)){
+                        if(A_val == 0){
+                        X_wins()
+                        }
+                        else{
+                        O_wins()
+                        } 
                   }
-                  else{
-                   O_wins()
-                  } 
-            } 
-            else if (( E_val  == C_val ) && (G_val  == C_val % 2 )){
-                   if(C_val == 0){
-                   X_wins()
+            }
+             if (CEG){
+
+                  if (( E_val  == C_val ) && (G_val  == C_val )){
+                        if(C_val == 0){
+                        X_wins()
+                        }
+                        else{
+                        O_wins()
+                        } 
                   }
-                  else{
-                   O_wins()
-                  } 
             } 
             else{
                   console.log("not a winner")
             } 
-            console.log(move_count)
+      
       }
-
       function hideResultMenu() {
              document.getElementById("result_menu").style.display = "none";
       }
@@ -333,7 +420,42 @@
             win_msg.appendChild(view_game_table)
 
             disable_game_table()
-    
+      }
+      function draw(){
+            const rmc = document.getElementById("result_menu-content");
+            const result_menu = document.getElementById("result_menu");
+            result_menu.style.display = 'flex'; 
+            rmc.innerHTML = ''// resets everything so last result screen does not show in new game
+
+            
+            const win_msg = document.createElement('h1');
+            win_msg.innerHTML = "<img src='X.png' style='height: 100px; vertical-align: middle;" +
+                                    "margin-right: 50px;'>" +
+                                    "It's a draw!!!" +
+                                    "<img src='O.webp' style='height: 100px; vertical-align: middle;"+
+                                    "margin-left: 50px;'>";
+            
+            const close_button = document.createElement('button');
+            close_button.id = 'Result_close_button';
+            close_button.innerHTML = "Close";
+            close_button.style.width = "500px"
+            close_button.style.height = "75px"
+            close_button.onclick = hideResultMenu;
+            close_button.style.display = 'flex';
+            close_button.style.marginLeft = '25px'
+
+            const view_game_table = document.createElement('button');
+            view_game_table.id = 'Result_close_button';
+
+            view_game_table.onclick = post_game_peek
+            
+            view_game_table.innerHTML = "View game board ";
+
+            rmc.appendChild(win_msg);
+            win_msg.appendChild(close_button);
+            win_msg.appendChild(view_game_table)
+            disable_game_table()
+
       }
 
       // runs connection as soon as script loads
