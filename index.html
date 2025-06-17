@@ -50,7 +50,9 @@
 
             connectedSocket.on("LOGIN-FAIL", function (message) {
 			//alert(message.message);
-                  document.getElementById("error_msg").innerHTML = message
+                  document.getElementById("error_msg").innerHTML = message.message;
+                  document.getElementById('main_box').style.visibility = 'hidden'
+                  document.getElementById('Log_in_screen').style.visibility = 'visible'
         	});
 
       }
@@ -604,8 +606,8 @@
       <div id="Log_in_screen" style="visibility: visible;">
            <h1 style="font-family: Arial, Helvetica, sans-serif">Please create an account:</h1>
 
-            <form onsubmit="document.getElementById('Help_menu').style.visibility = 'hidden'; return false;"> <!-- doesnt reload the page and hides the menu -->
-                  <label style="font-size: 25px; font-family: Arial, Helvetica, sans-serif"" for="Screenname">Screen Name:</label><br>
+            <form onsubmit="return false;"> <!-- doesnt reload the page and hides the menu -->
+                  <label style="font-size: 25px; font-family: Arial, Helvetica, sans-serif" for="Screenname">Screen Name:</label><br>
                   <input type="text" id="Screenname"  placeholder="John"><br>
 
                   <div id= "name_taken" class="err_msg hidden">That Screenname is already taken. Please try a new name</div>
