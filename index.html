@@ -49,6 +49,17 @@
         	});
 
       }
+
+      let  Intervalid 
+
+      function update_players(){
+            Intervalid ??= setInterval(Update_players, 1000)
+      }
+      function Update_players(){
+            
+           connectedSocket.emit("UPDATE");
+      }
+      
       
       var screen_name = "";
       
@@ -484,6 +495,7 @@
 
       // runs connection as soon as script loads
       createSocket();
+      update_players()
 </script>
 </head>
 <body>
