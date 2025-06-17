@@ -166,16 +166,29 @@
             }
        }
 
-            var ABC = true
-            var DEF = true
-            var GHI = true
+            let ABC = true
+            let DEF = true
+            let GHI = true
 
-            var ADG = true
-            var BEH = true
-            var CFI = true
+            let ADG = true
+            let BEH = true
+            let CFI = true
 
-            var AEI =  true
-            var CEG = true 
+            let AEI =  true
+            let CEG = true 
+
+            let A_val 
+            let B_val 
+            let C_val
+
+            let D_val 
+            let E_val 
+            let F_val
+
+            let G_val 
+            let H_val 
+            let I_val 
+
             
       function Game_status_check(){
             console.log (ABC)
@@ -192,17 +205,17 @@
             const H = document.getElementsByName('8')[0];
             const I = document.getElementsByName('9')[0];
             
-            var A_val =  (parseInt(A.id) % 2)
-            var B_val =  (parseInt(B.id) % 2)
-            var C_val =  (parseInt(C.id) % 2)
+            A_val =  (parseInt(A.id) % 2)
+            B_val =  (parseInt(B.id) % 2)
+            C_val =  (parseInt(C.id) % 2)
 
-            var D_val =  (parseInt(D.id) % 2)
-            var E_val =  (parseInt(E.id) % 2)
-            var F_val =  (parseInt(F.id) % 2)
+            D_val =  (parseInt(D.id) % 2)
+            E_val =  (parseInt(E.id) % 2)
+            F_val =  (parseInt(F.id) % 2)
 
-            var G_val =  (parseInt(G.id) % 2)
-            var H_val =  (parseInt(H.id) % 2)
-            var I_val =  (parseInt(I.id) % 2)
+            G_val =  (parseInt(G.id) % 2)
+            H_val =  (parseInt(H.id) % 2)
+            I_val =  (parseInt(I.id) % 2)
 
             const A_defined = !(isNaN(A_val));
             const B_defined = !(isNaN(B_val));
@@ -261,6 +274,7 @@
 
 
             const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
+            const x_row = []
 
             // THIS WORKS I THINK????
                   let trueCount = 0;
@@ -272,7 +286,7 @@
                         console.log(trueCount)
                   }
                   }
-                  if (trueCount >= 7 && move_count > 6){
+                  if (trueCount >= 7 && move_count > 6  && !win_on_last_move()){
                         draw()
                   }
 
@@ -280,7 +294,7 @@
       // game logic 
             //across 
 
-            // this one can be removed i think
+            // this one can be removed i
             // keep this in its the old draw method 
 
             ///testing block 1 
@@ -382,6 +396,45 @@
             } 
       
       }
+      function win_on_last_move(){ 
+            A_val = A_val ?? 0; // If num1 is undefined or null, use 0
+            B_val = B_val ?? 0;
+            C_val = C_val ?? 0;
+
+            D_val = D_val ?? 0;
+            E_val = E_val ?? 0;
+            F_val = F_val ?? 0;
+
+            G_val = G_val ?? 0;
+            H_val = H_val ?? 0;
+            I_val = I_val ?? 0;
+
+            if (A_val + B_val +C_val == 0){
+                  return true 
+            }
+            if (D_val + E_val +F_val == 0){
+                  return true 
+            }
+            if (G_val + H_val +I_val == 0){
+                  return true 
+            }
+            if (A_val + D_val +G_val == 0){
+                  return true 
+            }
+            if (B_val + E_val + H_val == 0){
+                  return true 
+            }
+            if (C_val + F_val +I_val == 0){
+                  return true 
+            }
+             if (A_val + E_val +I_val == 0){
+                  return true 
+            }
+             if (C_val + E_val +G_val == 0){
+                  return true 
+            }
+            return false
+       }
       function hideResultMenu() {
              document.getElementById("result_menu").style.display = "none";
       }
