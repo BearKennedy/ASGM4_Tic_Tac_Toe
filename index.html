@@ -66,7 +66,8 @@
       function logout() {
             //connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
             //connectedSocket = null;
-            document.getElementById("Open_menu").style.visibility = 'visible';
+            document.getElementById("main_box").style.visibility = 'hidden';
+            document.getElementById('Log_in_screen').style.visibility = 'visible'
       }
       function open_help_menu(){
             document.getElementById("Help_menu").style.visibility = 'visible'
@@ -258,31 +259,37 @@
             if ((C_defined && G_defined) && C_val  != G_val ) CEG = false
             if ((E_defined && G_defined) && E_val  != G_val ) CEG = false
 
-/*
+
             const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
 
+            // THIS WORKS I THINK????
                   let trueCount = 0;
                   for (let i = 0; i < conditions.length; i++) {
                   if (!conditions[i]) {
                         trueCount++;
                         console.log("LICK")
+                        console.log(move_count)
                         console.log(trueCount)
                   }
                   }
-                  if (trueCount >= 7){
+                  if (trueCount >= 7 && move_count > 6){
                         draw()
                   }
-*/
+
 
       // game logic 
             //across 
+
+            // this one can be removed i think
             // keep this in its the old draw method 
 
+            ///testing block 1 
+            /*
             // catches error when last move results in a win, 
             if (!ABC && !DEF && !GHI && !ADG && !BEH && !CFI &&!AEI && !CEG ){
                   console.log("ITS A DRAWWW")
                   draw();
-            }
+            }*/
 
             if (ABC){
                   if (( B_val == A_val) && (C_val == A_val  )) {
