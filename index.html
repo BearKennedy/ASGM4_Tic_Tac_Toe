@@ -19,8 +19,8 @@
       // PLAY X-player-screen-name O-player-screen-name (server to only the 2 players)
       // Send message to Server. 
 	// Will create a connection if one is not already established
-
-
+      // MOVE screen-name cell-number (1 to 9)
+      // END-GAME, [ winner [ X | O ] screen-name] OR END-GAME, D
      
 	function sendToServer(messageType, message) {
   		try {
@@ -49,11 +49,16 @@
         	});
 
       }
-
+      
+      var screen_name = "";
+      
+      function logout() {
+            connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
+            connectedSocket = null;
+      }
 
 
       //////////////////////////// DATA BASE STUFF ///////////////////////////
-      var screen_name = "";
 
       function addToDB() {
             screen_name = document.getElementById('Screenname').value;
@@ -490,7 +495,7 @@
       <tr>
             <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
                   <a id= help_box  href="#"  onclick="test(); return false;">Help |</a>
-                  <a id="help_box" href="#" onclick="alert('logout')"; return false;>Logout</a> 
+                  <a id="help_box" href="#" onclick="logout()"; return false;>Logout</a> 
             </th>
       </tr>
 

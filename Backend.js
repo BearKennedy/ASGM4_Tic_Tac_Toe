@@ -66,19 +66,22 @@ io.on('connection', (socket) => {
 	    }
     });
 
-    // if message type is PrivateRoom1-msg, handle it here
-    socket.on('PrivateRoom1-msg', (data) => {
+    // if message type is game-msg, handle it here
+    socket.on('game-msg', (data) => {
        	    console.log(`Received message: ${data}`);
 	    switch (data) {
-		    case "JOIN": socket.join("PrivateRoom1"); socket.emit("alert","Joined"); break; // join room
-		    case "EXIT": socket.leave("PrivateRoom1"); socket.emit("alert","Exited"); break; // exit room
-		    default: io.to("PrivateRoom1").emit("PrivateRoom1-msg", data); // send to room1 only
+		    case "JOIN": socket.join("game-msg"); socket.emit("alert","Joined"); break; // join room
+		    case "EXIT": socket.leave("game-msg"); socket.emit("alert","Exited"); break; // exit room
+		    default: io.to("game-msg").emit("game-msg", data); // send to room1 only
 	    }
 
     });
 
-    socket.on('disconnect', () => {
+    socket.on('TO-SERVER LOGOUT', (screenName) => {
         console.log(`Client disconnected: ${socket.id}`);
+        removeUserFromDatabase("players", "x_player", screenName);
+        removeUserFromDatabase("players", "o_player", screenName);
+        removeUserFromDatabase("logged_in_screenname", "screen_name", screenName);
     });
 
     socket.on('TO-SERVER LOGIN', (screenName) => { 
@@ -89,13 +92,27 @@ io.on('connection', (socket) => {
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 
-    socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
+    socket.on('NEW-GAME', async (data) => { //data holds .screen_name and .choice
         console.log('Server received new game request for:', data.screen_name); 
-        newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
+        await new Promise((resolve, reject) => {
+            newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
+            returnActiveGames();
+            returnIdlePlayers();
+            socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
+            resolve(true)
+        });
+    });  
+
+
+    socket.on('JOIN', (data) => { //data holds .screen_name and .choice
+        console.log('User '+  data.screen_name + ' wants to join: ' + data.opponent); 
+        
+        //joinGame(data.screen_name, data.opponent);
         returnActiveGames();
         returnIdlePlayers();
         socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-    });  
+        socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'player1': data.screen_name, 'player2': data.opponent});
+    });
 
 });
     
@@ -155,6 +172,17 @@ function addUserToDatabase(screenName) {
             return;
         }
         //res.send(req.body.username+" added to logged_in_screenname");
+    });
+}
+
+function removeUserFromDatabase(table, column, screenName) {
+    var query="DELETE FROM " + table + " WHERE " + column + " = ?";
+    dbCon.query(query, [screenName], function (error, data, fields) {
+        if (error) {
+            console.log(error);
+            //res.send("DB access error");
+            return;
+        }
     });
 }
 
@@ -238,13 +266,25 @@ function returnIdlePlayers() {
                 idles.push(`${result[i].screen_name}`);
             }
         }
-        
+
         idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
         //console.log(idleList); 
     });
-    
-    
 }
+
+function joinGame(screenName, opponentScreenName) {
+    var query="SELECT * FROM players WHERE o_player = ? OR x_player = ?";
+    dbCon.query(query, [opponentScreenName], function (error, result) {
+        if (error) {
+            console.log(error);
+            console.log("DB access error");
+            return;
+        }
+        console.log(result);
+        //res.send(req.body.username+" added to logged_in_screenname");
+    });
+}
+
 //INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
 //UPDATE players SET o_player = "player2" WHERE x_player = "player"; //when someone joins the match (as o)
 //DELETE FROM players WHERE x_player = "player"; //when the game is over
