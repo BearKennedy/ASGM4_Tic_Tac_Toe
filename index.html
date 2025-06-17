@@ -55,8 +55,9 @@
         	});
 
             connectedSocket.on("LOGIN-OK", function (message) {
-                  document.getElementById('main_box').style.visibility = 'visible'
-                  document.getElementById('Log_in_screen').style.visibility = 'hidden'
+                  alert("MADE IT");
+                  document.getElementById('main_box').style.visibility = 'visible';
+                  document.getElementById('Log_in_screen').style.visibility = 'hidden';
 			
 
         	});
@@ -89,17 +90,13 @@
       function close_help_menu(){
             document.getElementById("Help_menu").style.visibility = 'hidden'
       }
-       function show_main_box(){
-      
-      }
-
 
       //////////////////////////// DATA BASE STUFF ///////////////////////////
 
       function addToDB() {
             screen_name = document.getElementById('Screenname').value;
             if (screen_name == '') {return}
-
+            if (!connectedSocket) createSocket();
             connectedSocket.emit("TO-SERVER LOGIN", screen_name);
       }
 
@@ -589,7 +586,7 @@
 
       // runs connection as soon as script loads
       createSocket();
-      update_players()
+      //update_players()
 </script>
 </head>
 <body>
@@ -617,7 +614,7 @@
                   <div id= "name_taken" class="err_msg hidden">That Screenname is already taken. Please try a new name</div>
                   <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
 
-                  <input type="submit" value="Submit" onclick="addToDB(),show_main_box()">
+                  <input type="submit" value="Submit" onclick="addToDB()">
             </form> 
             <!-- send error here -->
       <h1 id="error_msg" style="color: red;">error</h1>

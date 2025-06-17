@@ -65,6 +65,9 @@ io.on('connection', (socket) => {
         //  custom return for when screen name is taken
             case "LOGIN-FAIL": socket.emit("LOGIN-FAIL",data.message); break;
 
+        //  when login is okay
+            case "LOGIN-OK": socket.emit("LOGIN-OK",data.message); break;
+
 		// Broadcast the message to all clients (minus sender client)
 	    	case "broadcastAllMinusMe": socket.broadcast.emit("general-msg","All minus me "+data.message); break;
 
@@ -93,18 +96,19 @@ io.on('connection', (socket) => {
         //remove from the array
     });
 
-    socket.on('TO-SERVER LOGIN', (screenName) => { 
+    socket.on('TO-SERVER LOGIN', async (screenName) => { 
         nameToID.push([screenName, socket.id]);
         console.log(nameToID);
         console.log('Server received login request for:', screenName); 
-        addUserExistCheck(screenName); // adds the name if it is not taken
+
+        await addUserExistCheck(screenName); // adds the name if it is not taken
         
         if(nameTaken){ 
             socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
             returnActiveGames();
             returnIdlePlayers();
-            socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+            socket.emit("LOGIN-OK", {'media': "LOGIN-OK", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
             //console.log("found? : " + returnSocketID("test"));
         }
     });  
@@ -128,8 +132,10 @@ io.on('connection', (socket) => {
     socket.on('JOIN', (data) => { //data holds .screen_name and .opponent
         console.log('User '+  data.screen_name + ' wants to join user ' + data.opponent); 
         if(data.screen_name == data.opponent) {
+            console.log("Join unsuccessful");
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
+            console.log("Join unsuccessful");
             //removes the client from the players table before adding them to the oppoents name
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
@@ -138,7 +144,7 @@ io.on('connection', (socket) => {
             returnActiveGames();
             returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-            socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'X-player-screen-name': data.screen_name, 'O-player-screen-name': data.opponent});
+            //socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'X-player-screen-name': data.screen_name, 'O-player-screen-name': data.opponent});
         }
     });
 
@@ -183,7 +189,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //app.listen(port, () => console.log(`we have a connection on port: ${port}`));
 
-function addUserExistCheck(screenName) {
+async function addUserExistCheck(screenName) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
     dbCon.query(query, [screenName], function (error, result) { 
         if (error) {
@@ -204,9 +210,9 @@ function addUserExistCheck(screenName) {
     });
 }
 
-function addUserToDatabase(screenName) {
+async function addUserToDatabase(screenName) {
     var query="INSERT INTO logged_in_screenname SET screen_name = ?";
-    dbCon.query(query, [screenName], function (error, data, fields) {
+    await dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
             //res.send("DB access error");
@@ -227,9 +233,9 @@ function removeUserFromDatabase(table, column, screenName) {
     });
 }
 
-function newGame(screenName, letterChoice) {
+async function newGame(screenName, letterChoice) {
     var query="INSERT INTO players SET " + letterChoice + "_player = ?";
-    dbCon.query(query, [screenName], function (error, data, fields) {
+    await dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
             console.log("DB access error");
