@@ -90,6 +90,10 @@
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
       }
 
+      function join_game(button){
+            //socket stuff goes here
+      }
+
       function fillActives(givenHTML) {
             document.getElementById("actives").innerHTML = givenHTML;
       }
@@ -507,8 +511,8 @@
       </tr>
       <tr>
             <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
-                  <a id= help_box  href="#"  onclick="return false;">Help |</a>
-                  <a id="help_box" href="#" onclick="logout(); return false;">Logout</a> 
+                  <a id= help_box style="text-decoration: none;" href="#"  onclick="return false;">Help |</a>
+                  <a id="help_box" style="text-decoration: none;" href="#" onclick="logout(); return false;">Logout</a> 
             </th>
       </tr>
 
@@ -520,11 +524,12 @@
                   idle users:
             </div>
             <div id = "avialable_games">
-                  Active games
+                 <p  id="avialable_games_headder"> Active games:
+                  <button  id = "new_game_button" onclick = "newGameButton()">New Game</button></p>
                   <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%; ">
                         
                   </table>
-                  <button onclick = "newGameButton()"><h1>New Game</h1></button>
+                  
             </div>
             
             
@@ -532,7 +537,7 @@
                   
                   <div id = "x_or_o_content">
                         <h1>Pick a side to play</h1>
-                        <img src="X.png" style="width: 100px; margin-right: 300px;">
+                        <img src="X.png" style="width: 100px; margin-right: 200px;">
                         <img src="O.webp" style="width: 100px;">
                         <div id ="button-container">
                               
