@@ -51,8 +51,14 @@
             connectedSocket.on("LOGIN-FAIL", function (message) {
 			alert(message.message);
                   document.getElementById("error_msg").innerHTML = message.message;
-                  document.getElementById('main_box').style.visibility = 'hidden'
-                  document.getElementById('Log_in_screen').style.visibility = 'visible'
+                  
+        	});
+
+            connectedSocket.on("LOGIN-OK", function (message) {
+                  document.getElementById('main_box').style.visibility = 'visible'
+                  document.getElementById('Log_in_screen').style.visibility = 'hidden'
+			
+
         	});
 
       }
@@ -84,9 +90,7 @@
             document.getElementById("Help_menu").style.visibility = 'hidden'
       }
        function show_main_box(){
-            document.getElementById('main_box').style.visibility = 'visible'
-            document.getElementById('Log_in_screen').style.visibility = 'hidden'
-
+      
       }
 
 
