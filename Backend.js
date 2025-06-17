@@ -23,6 +23,7 @@ const  {Server}  = require('socket.io'); // deconstruct Server i.e. get the "Ser
 var activeList = "";
 var idleList = "";
 var nameToID = [];
+var nameTaken = true;
 
 // Get public ip address and use it to setup CORS
 var myIp=false;
@@ -61,6 +62,9 @@ io.on('connection', (socket) => {
         //  custom addition that is for updates
             case "update": io.emit("update-msg", data.message); break;
 
+        //  custom return for when screen name is taken
+            case "LOGIN-FAIL": socket.emit("LOGIN-FAIL",data.message); break;
+
 		// Broadcast the message to all clients (minus sender client)
 	    	case "broadcastAllMinusMe": socket.broadcast.emit("general-msg","All minus me "+data.message); break;
 
@@ -95,11 +99,14 @@ io.on('connection', (socket) => {
         console.log('Server received login request for:', screenName); 
         addUserExistCheck(screenName); // adds the name if it is not taken
         
-
-        returnActiveGames();
-        returnIdlePlayers();
-        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
-        //console.log("found? : " + returnSocketID("test"));
+        if(nameTaken){ 
+            socket.emit("LOGIN-FAIL", {'media': "ResendToMe", 'message': "LOGIN-FAIL"}); 
+        } else {
+            returnActiveGames();
+            returnIdlePlayers();
+            socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+            //console.log("found? : " + returnSocketID("test"));
+        }
     });  
 
     socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
@@ -188,9 +195,10 @@ function addUserExistCheck(screenName) {
         if (result.length!=0) {
             console.log("name taken");
             ////  HERE IS THE EMMIT
+            nameTaken = true;
             return; //user screen name does exist
         }
-        
+        nameTaken = false;
         console.log("name not taken");
         addUserToDatabase(screenName); //user screen name does not exist
     });
@@ -330,3 +338,5 @@ function returnSocketID(name) {
 //INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
 //UPDATE players SET o_player = "player2" WHERE x_player = "player"; //when someone joins the match (as o)
 //DELETE FROM players WHERE x_player = "player"; //when the game is over
+
+
