@@ -509,9 +509,20 @@
                   <button onclick = "newGameButton()"><h1>New Game</h1></button>
             </div>
             
+            
             <div id="x_or_o" style="visibility: hidden;">
-                  <button onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('x')"> X </button>
-                  <button onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('o')"> O </button>
+                  
+                  <div id = "x_or_o_content">
+                        <h1>Pick a side to play</h1>
+                        <img src="X.png" style="width: 100px; margin-right: 300px;">
+                        <img src="O.webp" style="width: 100px;">
+                        <div id ="button-container">
+                              
+                  <button id="pick_x" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('x')"> X </button>
+                  <button id="pick_o" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('o')"> O </button>
+
+                        </div>
+                  </div>
             </div>
 
             <div id = "game_window" style="">
