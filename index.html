@@ -103,10 +103,14 @@
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
       }
       
-     
-
       function join_game(button){
-            //socket stuff goes here
+            
+            sendToServer('JOIN', button );
+            toggle_game_div()
+      }
+      function leave_game(button){
+            sendToServer('EXIT', button);
+
       }
 
       function fillActives(givenHTML) {
@@ -656,7 +660,7 @@
                   <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
             </div>
             <div width="100%" style= "">
-                  <h1 onclick="toggle_game_div()" style="cursor: pointer;">LEAVE</h1>
+                  <h1 onclick="toggle_game_div(),leave_game()" style="cursor: pointer;">LEAVE</h1>
             </div>
             </center>
       </div>
