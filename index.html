@@ -48,6 +48,11 @@
                   }
         	});
 
+            connectedSocket.on("LOGIN-FAIL", function (message) {
+			//alert(message.message);
+                  document.getElementById("error_msg").innerHTML = message
+        	});
+
       }
 
       let  Intervalid 
