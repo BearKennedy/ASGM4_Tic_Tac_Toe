@@ -20,6 +20,8 @@ const app = require('express')(); // express is the middleware for handling the 
 app.use(cors()); // Using the CORS middleware
 const httpServer = require('http').createServer(app);
 const  {Server}  = require('socket.io'); // deconstruct Server i.e. get the "Server" part of the socket.io object
+var activeList = "";
+var idleList = "";
 
 // Get public ip address and use it to setup CORS
 var myIp=false;
@@ -82,13 +84,17 @@ io.on('connection', (socket) => {
     socket.on('TO-SERVER LOGIN', (screenName) => { 
         console.log('Server received login request for:', screenName); 
         addUserExistCheck(screenName); // adds the name if it is not taken
-        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK list-of-logged-in-screennames-and-status"}); 
+        returnActiveGames();
+        returnIdlePlayers();
+        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 
     socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
         console.log('Server received new game request for:', data.screen_name); 
         newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
-        socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS list-of-screen-names status"}); 
+        returnActiveGames();
+        returnIdlePlayers();
+        socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
     });  
 
 });
@@ -168,19 +174,19 @@ function newGame(screenName, letterChoice) {
 function returnActiveGames() {
     var query="SELECT * FROM players ";
     dbCon.query(query, function (error, result) { 
-        var whatImReturning = "";
+        activeList = "<tr> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> X-Player </th> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> O-Player </th> </tr>";
 
         if (error) {
             console.log(error);
-            res.send("DB access error");
+            //res.send("DB access error");
             return;
         }
         if (result.length==0) {
-            whatImReturning += "No Games";
+            activeList += "No Games";
         } else {
             for (var i = 0; i < result.length; i++) {
                 if(result[i].x_player == null) { 
-                    whatImReturning +=
+                    activeList +=
                     `<tr>
                             <th style = "padding: 10px">
                                 <button id = "join_${result[i].o_player}">JOIN</button>
@@ -190,7 +196,7 @@ function returnActiveGames() {
                             </th>
                     </tr>`;
                 } else if (result[i].o_player == null) {
-                    whatImReturning +=
+                    activeList +=
                     `<tr>
                             <th style = "padding: 10px">
                                 ${result[i].x_player}
@@ -199,56 +205,42 @@ function returnActiveGames() {
                                 <button id = "join_${result[i].x_player}">JOIN</button>
                             </th>
                     </tr>`; 
+                } else {
+                    activeList +=
+                    `<tr>
+                            <th style = "padding: 10px">
+                                ${result[i].x_player}
+                            </th>
+                            <th style = "padding: 10px">
+                                ${result[i].o_player}
+                            </th>
+                    </tr>`; 
                 }
 			}
         }
-        //console.log(whatImReturning);
-		res.send(whatImReturning); //somehow return
+        //console.log(activeList);
+		//res.send(activeList); //somehow return
     });
 }
 
 
 function returnIdlePlayers() {
-    var query="SELECT screen_name FROM logged_in_screenname ";
+    query="SELECT screen_name FROM logged_in_screenname WHERE NOT EXISTS (SELECT *  FROM players WHERE players.x_player = logged_in_screenname.screen_name OR players.o_player = logged_in_screenname.screen_name);";
+    let idles = []
     dbCon.query(query, function (error, result) { 
-        var players = [];
-
         if (error) {
             console.log(error);
             console.log("DB access error");
             return;
         }
-        if (result.length==0) {
-            return;
-        } else {
-            for(var i = 0; i < result.length; i++) {
-                players.push(`${result[i].screen_name}`);
+        if (result.length!=0) {
+            for(var i = 0; i < result.length; i++) { 
+                idles.push(`${result[i].screen_name}`);
             }
         }
-        console.log(players.toString());
-        var idles = [];
-        query="SELECT * FROM players WHERE x_player NOT IN ('" + players.join("', '") + "') OR o_player NOT IN ('" + players.join("', '") + "')";
-        dbCon.query(query, function (error, result) { 
-            if (error) {
-                console.log(error);
-                console.log("DB access error");
-                return;
-            }
-            if (result.length!=0) {
-                for(var i = 0; i < result.length; i++) { 
-                    if(`${result[i].x_player}` != 'null') {
-                        idles.push(`${result[i].x_player}`);
-                    }
-                    if(`${result[i].o_player}` != 'null') {
-                       idles.push(`${result[i].o_player}`);
-                    }
-                    //console.log(idles.toString());
-                }
-            }
-
-            console.log(idles.toString());
-            res.send("<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>"); //somehow return
-        });
+        
+        idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
+        //console.log(idleList); 
     });
     
     

@@ -42,6 +42,10 @@
 
             connectedSocket.on("general-msg", function (message) {
 			alert(message.message);
+                  if(message.activeList) {
+                        fillActives(message.activeList);
+                        fillIdles(message.idleList);
+                  }
         	});
 
       }
@@ -69,6 +73,13 @@
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
       }
 
+      function fillActives(givenHTML) {
+            document.getElementById("actives").innerHTML = givenHTML;
+      }
+      
+      function fillIdles(givenHTML) {
+            document.getElementById("idle").innerHTML = givenHTML;
+      }
 
             /////////////////////Game board actions//////////////////////////
       function toggle_game_div(button) {
@@ -493,14 +504,7 @@
             <div id = "avialable_games">
                   Active games
                   <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%; ">
-                        <tr>
-                              <th style = "padding: 10px; border-bottom: 4px solid black; margin = -4px">
-                                    X-Player
-                              </th>
-                              <th style = "padding: 10px; border-bottom: 4px solid black; margin = -4px">
-                                    O-Player
-                              </th>
-                        </tr>
+                        
                   </table>
                   <button onclick = "newGameButton()"><h1>New Game</h1></button>
             </div>
