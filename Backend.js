@@ -178,7 +178,6 @@ const { stat } = require('fs');
 
 const port = 8081
 
-
 app.use(cors()); // Using the CORS middleware
 var dbCon = require('./connectToDB.js').dbCon; // connect to DB
 
@@ -191,7 +190,7 @@ app.use(express.urlencoded({ extended: true }));
 
 async function addUserExistCheck(screenName) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
-    dbCon.query(query, [screenName], function (error, result) { 
+    await dbCon.query(query, [screenName], function (error, result) { 
         if (error) {
             console.log(error);
             console.log("DB access error");
@@ -222,9 +221,9 @@ async function addUserToDatabase(screenName) {
     });
 }
 
-function removeUserFromDatabase(table, column, screenName) {
+async function removeUserFromDatabase(table, column, screenName) {
     var query="DELETE FROM " + table + " WHERE " + column + " = ?";
-    dbCon.query(query, [screenName], function (error, data, fields) {
+    await dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
             //res.send("DB access error");
@@ -246,9 +245,9 @@ async function newGame(screenName, letterChoice) {
 }
 
 
-function returnActiveGames() {
+async function returnActiveGames() {
     var query="SELECT * FROM players ";
-    dbCon.query(query, function (error, result) { 
+    await dbCon.query(query, function (error, result) { 
         activeList = "<tr> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> X-Player </th> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> O-Player </th> </tr>";
 
         if (error) {
@@ -299,10 +298,10 @@ function returnActiveGames() {
 }
 
 
-function returnIdlePlayers() {
+async function returnIdlePlayers() {
     query="SELECT screen_name FROM logged_in_screenname WHERE NOT EXISTS (SELECT *  FROM players WHERE players.x_player = logged_in_screenname.screen_name OR players.o_player = logged_in_screenname.screen_name);";
     let idles = []
-    dbCon.query(query, function (error, result) { 
+    await dbCon.query(query, function (error, result) { 
         if (error) {
             console.log(error);
             console.log("DB access error");
@@ -319,9 +318,9 @@ function returnIdlePlayers() {
     });
 }
 
-function joinGame(screenName, opponentScreenName) {
+async function joinGame(screenName, opponentScreenName) {
     var query="SELECT * FROM players WHERE o_player = ? OR x_player = ?";
-    dbCon.query(query, [opponentScreenName], function (error, result) {
+    await dbCon.query(query, [opponentScreenName], function (error, result) {
         if (error) {
             console.log(error);
             console.log("DB access error");
@@ -331,6 +330,7 @@ function joinGame(screenName, opponentScreenName) {
         //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
+
 function returnSocketID(name) {
     for(let i = 0; i < nameToID.length; i++) {
         console.log(nameToID[i][0]);
