@@ -66,7 +66,20 @@
       function logout() {
             //connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
             //connectedSocket = null;
-            document.getElementById("Open_menu").style.visibility = 'visible';
+            document.getElementById("main_box").style.visibility = 'hidden';
+            document.getElementById('Log_in_screen').style.visibility = 'visible'
+      }
+      function open_help_menu(){
+            document.getElementById("Help_menu").style.visibility = 'visible'
+      }
+
+      function close_help_menu(){
+            document.getElementById("Help_menu").style.visibility = 'hidden'
+      }
+       function show_main_box(){
+            document.getElementById('main_box').style.visibility = 'visible'
+            document.getElementById('Log_in_screen').style.visibility = 'hidden'
+
       }
 
 
@@ -89,6 +102,8 @@
             //makes server call with screen name and choice
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
       }
+      
+     
 
       function join_game(button){
             //socket stuff goes here
@@ -244,31 +259,37 @@
             if ((C_defined && G_defined) && C_val  != G_val ) CEG = false
             if ((E_defined && G_defined) && E_val  != G_val ) CEG = false
 
-/*
+
             const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
 
+            // THIS WORKS I THINK????
                   let trueCount = 0;
                   for (let i = 0; i < conditions.length; i++) {
                   if (!conditions[i]) {
                         trueCount++;
                         console.log("LICK")
+                        console.log(move_count)
                         console.log(trueCount)
                   }
                   }
-                  if (trueCount >= 7){
+                  if (trueCount >= 7 && move_count > 6){
                         draw()
                   }
-*/
+
 
       // game logic 
             //across 
+
+            // this one can be removed i think
             // keep this in its the old draw method 
 
+            ///testing block 1 
+            /*
             // catches error when last move results in a win, 
             if (!ABC && !DEF && !GHI && !ADG && !BEH && !CFI &&!AEI && !CEG ){
                   console.log("ITS A DRAWWW")
                   draw();
-            }
+            }*/
 
             if (ABC){
                   if (( B_val == A_val) && (C_val == A_val  )) {
@@ -511,14 +532,30 @@
       </tr>
       <tr>
             <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
-                  <a id= help_box style="text-decoration: none;" href="#"  onclick="return false;">Help |</a>
+                  <a id= help_box style="text-decoration: none;" href="#"  onclick="open_help_menu()">Help |</a>
                   <a id="help_box" style="text-decoration: none;" href="#" onclick="logout(); return false;">Logout</a> 
             </th>
       </tr>
 
       </table>
-      
-      <div id = "main_box">
+
+      <div id="Log_in_screen" style="visibility: visible;">
+           <h1 style="font-family: Arial, Helvetica, sans-serif">Please create an account:</h1>
+
+            <form onsubmit="document.getElementById('Help_menu').style.visibility = 'hidden'; return false;"> <!-- doesnt reload the page and hides the menu -->
+                  <label style="font-size: 25px; font-family: Arial, Helvetica, sans-serif"" for="Screenname">Screen Name:</label><br>
+                  <input type="text" id="Screenname"  placeholder="John"><br>
+
+                  <div id= "name_taken" class="err_msg hidden">That Screenname is already taken. Please try a new name</div>
+                  <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
+
+                  <input type="submit" value="Submit" onclick="addToDB(),show_main_box()">
+            </form> 
+            <!-- send error here -->
+      <h1 id="error_msg" style="color: red;">error</h1>
+      </div>
+
+      <div id = "main_box" style="visibility: hidden;">
             <center>
             <div id = "idle">
                   idle users:
@@ -575,8 +612,10 @@
             
       </div>
 
-      <div id = "Open_menu" style="visibility: visible;"> <!-- remove 'none'absolute-->
-            <div class="Open_menu-content">
+      <div id = "Help_menu" style="visibility: hidden;">
+            <<!-- remove 'none'absolute-->
+            <div class="Help_menu-content">
+                  <button onclick="close_help_menu()" class="close-button">X</button> 
                   <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
                   <h3>Created by Ryan and Bear:</h3>
                   <p> Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
@@ -602,18 +641,7 @@
                   </p>
                         
 
-                  <p>ARE YOU READY?</p>
-
-                  <div>
-                  <form onsubmit="document.getElementById('Open_menu').style.display = 'none'; return false;"> <!-- doesnt reload the page and hides the menu -->
-                  <label for="Screenname">Screenname:</label><br>
-                  <input type="text" id="Screenname"  placeholder="John"><br>
-
-                  <div id= "name_taken" class="err_msg hidden">That Screenname is already taken. Please try a new name</div>
-                  <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
-
-                  <input type="submit" value="Submit" onclick="addToDB()">
-                  </form> 
+                  
                   </div>
             </div>
       </div>
