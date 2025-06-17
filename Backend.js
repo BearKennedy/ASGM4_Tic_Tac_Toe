@@ -58,6 +58,9 @@ io.on('connection', (socket) => {
         // AND THIS IS HOW WE SEND
 	    	case "broadcastAllPlusMe": io.emit("general-msg",data.message); break;
 
+        //  custom addition that is for updates
+            case "update": io.emit("update-msg", data.message); break;
+
 		// Broadcast the message to all clients (minus sender client)
 	    	case "broadcastAllMinusMe": socket.broadcast.emit("general-msg","All minus me "+data.message); break;
 
@@ -91,10 +94,12 @@ io.on('connection', (socket) => {
         console.log(nameToID);
         console.log('Server received login request for:', screenName); 
         addUserExistCheck(screenName); // adds the name if it is not taken
+        
+
         returnActiveGames();
         returnIdlePlayers();
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
-        console.log("found? : " + returnSocketID("test"));
+        //console.log("found? : " + returnSocketID("test"));
     });  
 
     socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
@@ -110,7 +115,7 @@ io.on('connection', (socket) => {
         //updates everyone else
         returnActiveGames();
         returnIdlePlayers();
-        socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
+        socket.emit("general-msg", {'media': "update", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
     });  
     
     socket.on('JOIN', (data) => { //data holds .screen_name and .opponent
@@ -125,7 +130,7 @@ io.on('connection', (socket) => {
             joinGame(data.screen_name, data.opponent);
             returnActiveGames();
             returnIdlePlayers();
-            socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
+            socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
             socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'X-player-screen-name': data.screen_name, 'O-player-screen-name': data.opponent});
         }
     });
@@ -134,6 +139,13 @@ io.on('connection', (socket) => {
         console.log(data.screen_name + " is moving " + data.move_placement); 
         //newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
         //socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "MOVE", 'player': data.screen_name}); //sends the move to the opponent
+    });  
+
+    //maybe will be removed? Used for constantly refreshing the page
+    socket.on('UPDATE', () => {
+        returnActiveGames();
+        returnIdlePlayers();
+        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 });
     
@@ -318,5 +330,3 @@ function returnSocketID(name) {
 //INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
 //UPDATE players SET o_player = "player2" WHERE x_player = "player"; //when someone joins the match (as o)
 //DELETE FROM players WHERE x_player = "player"; //when the game is over
-
-
