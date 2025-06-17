@@ -114,6 +114,11 @@ io.on('connection', (socket) => {
         socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'player1': data.screen_name, 'player2': data.opponent});
     });
 
+    socket.on('UPDATE', () => { 
+        returnActiveGames();
+        returnIdlePlayers();
+        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+    });  
 });
     
 
