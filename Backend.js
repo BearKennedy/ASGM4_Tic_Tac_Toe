@@ -22,6 +22,7 @@ const httpServer = require('http').createServer(app);
 const  {Server}  = require('socket.io'); // deconstruct Server i.e. get the "Server" part of the socket.io object
 var activeList = "";
 var idleList = "";
+var nameToID = [];
 
 // Get public ip address and use it to setup CORS
 var myIp=false;
@@ -45,7 +46,6 @@ const io = new Server(httpServer, {
 // Defie the handlers for socket-io connection relation events
 io.on('connection', (socket) => {
     console.log(`Client connected: ${socket.id}`);
-
     // if message type is general-msg, handle it here
     // Note that data sent between client & server does not have to be plain text, objects and binary data can be sent too. You just have to parse it the right way upon receipt.
 
@@ -82,42 +82,58 @@ io.on('connection', (socket) => {
         removeUserFromDatabase("players", "x_player", screenName);
         removeUserFromDatabase("players", "o_player", screenName);
         removeUserFromDatabase("logged_in_screenname", "screen_name", screenName);
+
+        //remove from the array
     });
 
     socket.on('TO-SERVER LOGIN', (screenName) => { 
+        nameToID.push([screenName, socket.id]);
+        console.log(nameToID);
         console.log('Server received login request for:', screenName); 
         addUserExistCheck(screenName); // adds the name if it is not taken
         returnActiveGames();
         returnIdlePlayers();
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+        console.log("found? : " + returnSocketID("test"));
     });  
 
-    socket.on('NEW-GAME', async (data) => { //data holds .screen_name and .choice
+    socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
         console.log('Server received new game request for:', data.screen_name); 
-        await new Promise((resolve, reject) => {
-            newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
-            returnActiveGames();
-            returnIdlePlayers();
-            socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-            resolve(true)
-        });
-    });  
 
+        //removes the users game in case they already had one
+        removeUserFromDatabase("players", "x_player", data.screen_name);
+        removeUserFromDatabase("players", "o_player", data.screen_name);
 
-    socket.on('JOIN', (data) => { //data holds .screen_name and .choice
-        console.log('User '+  data.screen_name + ' wants to join: ' + data.opponent); 
-        
-        //joinGame(data.screen_name, data.opponent);
+        //makes the new game
+        newGame(data.screen_name, data.choice_of_X_or_O);
+
+        //updates everyone else
         returnActiveGames();
         returnIdlePlayers();
         socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-        socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'player1': data.screen_name, 'player2': data.opponent});
+    });  
+    
+    socket.on('JOIN', (data) => { //data holds .screen_name and .opponent
+        console.log('User '+  data.screen_name + ' wants to join: ' + data.opponent); 
+        if(data.screen_name === data.opponent) {
+            socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
+        } else {
+            //removes the client from the players table before adding them to the oppoents name
+            removeUserFromDatabase("players", "x_player", data.screen_name);
+            removeUserFromDatabase("players", "o_player", data.screen_name);
+            
+            joinGame(data.screen_name, data.opponent);
+            returnActiveGames();
+            returnIdlePlayers();
+            socket.emit("general-msg", {'media': "broadcastAllPlusMe", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
+            socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'X-player-screen-name': data.screen_name, 'O-player-screen-name': data.opponent});
+        }
     });
 
-    socket.on('UPDATE', () => { 
-        returnActiveGames();
-        returnIdlePlayers();
-        socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+    socket.on('MOVE', async (data) => { //data holds .screen_name and .move_placement (1-9)
+        console.log(data.screen_name + " is moving " + data.move_placement); 
+        //newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
+        //socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "MOVE", 'player': data.screen_name}); //sends the move to the opponent
     });  
 });
     
@@ -222,7 +238,7 @@ function returnActiveGames() {
                     activeList +=
                     `<tr>
                             <th style = "padding: 10px">
-                                <button id = "join_${result[i].o_player}">JOIN</button>
+                                <button id = "join_${result[i].o_player}" onclick = "join_game(this)">JOIN</button>
                             </th style = "padding: 10px">
                             <th>
                                 ${result[i].o_player}
@@ -235,7 +251,7 @@ function returnActiveGames() {
                                 ${result[i].x_player}
                             </th>
                             <th style = "padding: 10px">
-                                <button id = "join_${result[i].x_player}">JOIN</button>
+                                <button id = "join_${result[i].x_player}" onclick = "join_game(this)">JOIN</button>
                             </th>
                     </tr>`; 
                 } else {
@@ -288,6 +304,15 @@ function joinGame(screenName, opponentScreenName) {
         console.log(result);
         //res.send(req.body.username+" added to logged_in_screenname");
     });
+}
+function returnSocketID(name) {
+    for(let i = 0; i < nameToID.length; i++) {
+        console.log(nameToID[i][0]);
+        if(nameToID[i][0] == name) {
+            return nameToID[i][1];
+        }
+    }
+    return false;
 }
 
 //INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
