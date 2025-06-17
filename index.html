@@ -49,7 +49,7 @@
         	});
 
             connectedSocket.on("LOGIN-FAIL", function (message) {
-			//alert(message.message);
+			alert(message.message);
                   document.getElementById("error_msg").innerHTML = message.message;
                   document.getElementById('main_box').style.visibility = 'hidden'
                   document.getElementById('Log_in_screen').style.visibility = 'visible'
@@ -71,8 +71,8 @@
       var screen_name = "";
       
       function logout() {
-            //connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
-            //connectedSocket = null;
+            connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
+            connectedSocket = null;
             document.getElementById("main_box").style.visibility = 'hidden';
             document.getElementById('Log_in_screen').style.visibility = 'visible'
       }
@@ -111,9 +111,9 @@
       }
       
       function join_game(button){
-            
-            sendToServer('JOIN', button );
-            toggle_game_div()
+            ops_name = (button.id).replace("join_", "");
+            sendToServer('JOIN', {'screen_name' : screen_name, 'opponent' : ops_name});
+            toggle_game_div();
       }
       function leave_game(button){
             sendToServer('EXIT', button);

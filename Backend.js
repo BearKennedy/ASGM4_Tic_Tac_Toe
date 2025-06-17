@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
         addUserExistCheck(screenName); // adds the name if it is not taken
         
         if(nameTaken){ 
-            socket.emit("LOGIN-FAIL", {'media': "ResendToMe", 'message': "LOGIN-FAIL"}); 
+            socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
             returnActiveGames();
             returnIdlePlayers();
@@ -126,15 +126,15 @@ io.on('connection', (socket) => {
     });  
     
     socket.on('JOIN', (data) => { //data holds .screen_name and .opponent
-        console.log('User '+  data.screen_name + ' wants to join: ' + data.opponent); 
-        if(data.screen_name === data.opponent) {
+        console.log('User '+  data.screen_name + ' wants to join user ' + data.opponent); 
+        if(data.screen_name == data.opponent) {
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
             //removes the client from the players table before adding them to the oppoents name
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
             
-            joinGame(data.screen_name, data.opponent);
+            //joinGame(data.screen_name, data.opponent);
             returnActiveGames();
             returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
