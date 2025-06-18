@@ -400,3 +400,7 @@ background-color: rgb(255, 255, 255);
     padding-top: 75px; 
     padding-bottom: 50px;
 }
+.indented-paragraph {
+  text-indent: 3em; /* Indent the first line by 3 times the current font size */
+  line-height: 1.5; /* Good practice for readability */
+}
