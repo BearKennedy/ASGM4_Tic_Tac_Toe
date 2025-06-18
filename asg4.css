@@ -197,7 +197,7 @@
 
     .game_squares > * {
         flex: 1 1 0;
-        margin: -2px;
+        margin: 0px;
         align-items: center;
     }
 

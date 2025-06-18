@@ -204,16 +204,15 @@
       // function we call whenever we want to take a turn
       // function takes in a button since the button to move is the game square itself
       
-      function take_turn_setup(number){
+      function take_turn_setup(button, number){
             do_a_move(number);
-            Take_turn(number)
+            Take_turn(button, number)
 
 
       }
       //removed button 
-      function Take_turn(number){
-            console.log("IM THE TESTING BABY")
-            console.log(number)
+      function Take_turn(button,number){
+            
 
        const gameSquare = document.getElementsByName(number)[0];
      
@@ -226,6 +225,8 @@
        newImage.style.maxWidth = '100%';
        newImage.style.maxHeight = '100%'; 
        newImage.style.display = 'flex'; 
+       newImage.style.objectFit = 'fill';
+       
        console.log("im the problem its me")
       
 
@@ -262,6 +263,7 @@
 
 
         //gameSquare.appendChild(newImage);
+        button.remove();
         document.getElementsByName(number)[0].appendChild(newImage);
 
 
@@ -765,15 +767,15 @@
                   </div>
             <div id = "game_contain_squares"> 
                   <!-- game squares with the buttons -->
-                  <div class = "game_squares" name = "1"><button class="board_button" onclick="take_turn_setup(1)"></button></div>
-                  <div class = "game_squares" name = "2"><button class="board_button" onclick="take_turn_setup(2)"></button></div>
-                  <div class = "game_squares" name = "3"><button class="board_button" onclick="take_turn_setup(3)"></button></div>
-                  <div class = "game_squares" name = "4"><button class="board_button" onclick="take_turn_setup(4)"></button></div>
-                  <div class = "game_squares" name = "5"><button class="board_button" onclick="take_turn_setup(5)"></button></div>
-                  <div class = "game_squares" name = "6"><button class="board_button" onclick="take_turn_setup(6)"></button></div>
-                  <div class = "game_squares" name = "7"><button class="board_button" onclick="take_turn_setup(7)"></button></div>
-                  <div class = "game_squares" name = "8"><button class="board_button" onclick="take_turn_setup(8)"></button></div>
-                  <div class = "game_squares" name = "9"><button class="board_button" onclick="take_turn_setup(9)"></button></div>
+                  <div class = "game_squares" name = "1"><button class="board_button" onclick="take_turn_setup(this,1)"></button></div>
+                  <div class = "game_squares" name = "2"><button class="board_button" onclick="take_turn_setup(this,2)"></button></div>
+                  <div class = "game_squares" name = "3"><button class="board_button" onclick="take_turn_setup(this,3)"></button></div>
+                  <div class = "game_squares" name = "4"><button class="board_button" onclick="take_turn_setup(this,4)"></button></div>
+                  <div class = "game_squares" name = "5"><button class="board_button" onclick="take_turn_setup(this,5)"></button></div>
+                  <div class = "game_squares" name = "6"><button class="board_button" onclick="take_turn_setup(this,6)"></button></div>
+                  <div class = "game_squares" name = "7"><button class="board_button" onclick="take_turn_setup(this,7)"></button></div>
+                  <div class = "game_squares" name = "8"><button class="board_button" onclick="take_turn_setup(this,8)"></button></div>
+                  <div class = "game_squares" name = "9"><button class="board_button" onclick="take_turn_setup(this,9)"></button></div>
             </div>
             <!-- leave game div-->
             <div width="100%" style= "">
