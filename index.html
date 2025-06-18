@@ -88,13 +88,17 @@
                   document.getElementById("error_msg").style.visibility ='hidden'
                   document.getElementById('main_box').style.visibility = 'visible';
                   document.getElementById('Log_in_screen').style.visibility = 'hidden';
+                  document.getElementById("logout_button").style.visibility = 'visible';
                   fillActives(message.activeList);
                   fillIdles(message.idleList);
         	});
 
             connectedSocket.on("MOVE", function (message) {
                   console.log('getting  message now:')
-                  Take_turn(message.move_placement)
+                  const gameSquareDiv = document.getElementsByName(message.move_placement)[0]; // Assuming you're targeting the div with name="1"
+
+                  const button = gameSquareDiv.querySelector('button');
+                  Take_turn(button, message.move_placement)
                  // document.getElementsByName(message.move_placement)[0].click();
 
                   // what is message supposed to be sending???
@@ -226,23 +230,13 @@
       }
       //removed button 
       function Take_turn(button,number){
-            
-
        const gameSquare = document.getElementsByName(number)[0];
-     
-      //testing block
-       //const gameSquare = button.parentElement;  ////here
-
-       ////////////////////
-        // Create a new image element
        const newImage = document.createElement('img');
+
        newImage.style.maxWidth = '100%';
        newImage.style.maxHeight = '100%'; 
        newImage.style.display = 'flex'; 
        newImage.style.objectFit = 'fill';
-       
-       console.log("im the problem its me")
-      
 
         // if its x's turn, then the next click will be an X
         if (isXTurn) {
@@ -251,11 +245,7 @@
             // sets the area where the button is, that spots id to a number we relate to X
             // that being an even number which we can use later for game logic
 
-
-            //button.parentElement.id = x_num; ///////////////////////////////////here
             document.getElementsByName(number)[0].id= x_num
-
-
             // changes the game board header to display who's turn it is 
             document.getElementById("whoTurn").innerHTML = "O's Turn";
         } else {
@@ -266,18 +256,14 @@
             // we relate odd numbers to O's moves and even for X's moves
 
 
-            //button.parentElement.id = o_num;/////////////////////here
             document.getElementsByName(number)[0].id= o_num
             document.getElementById("whoTurn").innerHTML = "X's Turn";
         }
-        // removes the button from the game 
-        //document.getElementsByName(number)[0].button.remove(); ////////////here
+        
+            // removes the button from the game 
+        button.disabled = true
+        button.style.display = 'none';
         // adds the image to the spot on the board 
-
-
-
-        //gameSquare.appendChild(newImage);
-        button.remove();
         document.getElementsByName(number)[0].appendChild(newImage);
 
 
@@ -580,12 +566,14 @@
             document.querySelectorAll('.game_squares button').forEach(elem => {
                   // disable that button 
                   elem.disabled = true;
+                  
             });
       }
             // same thing as disable_game_buttons but turns them back on 
       function enable_game_table(){
             document.querySelectorAll('.game_squares button').forEach(elem => {
             elem.disabled = false;
+            elem.style.display = 'flex'
             });
       }
       // function that displays win message for X player winning 
@@ -630,6 +618,7 @@
             win_msg.appendChild(view_game_table)
             // disable the buttons from the table 
             disable_game_table()
+            
       }
 
       // same deal with the O results, only this time the content is regarding the O win results 
@@ -720,8 +709,9 @@
                               <p style=" margin-top:0; margin-bottom: 0; padding: 0;">Created by Ryan Retan and Bear Kennedy</p>
                         </div>
                   <div>
-                  <a style="text-decoration: none;" href="#" onclick="open_help_menu()">Help |</a>
-                  <a style="text-decoration: none;" href="#" onclick="logout(); return false;">Logout</a>
+                  <a id="logout_button" style="text-decoration: none; visibility: hidden;" href="#"  onclick="logout(); return false;">Logout |</a>
+                  <a style="text-decoration: none;" href="#" onclick="open_help_menu()">Help</a>
+                  
     </div>
 </div>
 </th>
