@@ -47,6 +47,12 @@
                   }
         	});
 
+            connectedSocket.on("UPDATED-USER-LIST-AND-STATUS", function (message) {
+                  // update the idles and active games page 
+                  fillActives(message.activeList);
+                  fillIdles(message.idleList);
+        	});
+            
             // when the user is connected to an opponent
             var whoAmI;
             connectedSocket.on("PLAY", function (message) {
@@ -83,6 +89,8 @@
                   document.getElementById('main_box').style.visibility = 'visible';
                   document.getElementById('Log_in_screen').style.visibility = 'hidden';
                   document.getElementById("logout_button").style.visibility = 'visible';
+                  fillActives(message.activeList);
+                  fillIdles(message.idleList);
         	});
 
             connectedSocket.on("MOVE", function (message) {
