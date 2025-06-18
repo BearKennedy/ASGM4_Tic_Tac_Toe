@@ -82,8 +82,7 @@ io.on('connection', (socket) => {
 	    switch (data.media) {
 		    case "JOIN": socket.join("game-msg"); socket.emit("alert","Joined"); break; // join room
 		    case "EXIT": socket.leave("game-msg"); socket.emit("alert","Exited"); break; // exit room
-		    default: io.to(data.opponentID).emit("PLAY", data.senderID); // send to game-msg room only
-            console.log("default");
+            default: console.log("default");
 	    }
 
     });
@@ -150,7 +149,7 @@ io.on('connection', (socket) => {
             removeUserFromDatabase("players", "o_player", data.screen_name);
             
             //figures out which letter the opponent is
-            opletter = await whichLetterIsOp(data.opponent);
+            let opletter = await whichLetterIsOp(data.opponent);
 
             removeUserFromDatabase("players", "x_player", data.opponent);
             removeUserFromDatabase("players", "o_player", data.opponent);
@@ -171,13 +170,28 @@ io.on('connection', (socket) => {
             returnActiveGames();
             returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-            socket.emit("game-msg", {media: "game-msg", 'opponentID': opponentID, 'senderID': socket.id});
+            
+            if(opletter == 'x') {
+                io.to(opponentID).emit("PLAY", {'x_player' : data.opponent, 'o_player' : data.screen_name});
+                socket.emit("PLAY", {'x_player' : data.opponent, 'o_player' : data.screen_name});
+            } else {
+                io.to(opponentID).emit("PLAY", {'x_player' : data.screen_name, 'o_player' : data.opponent});
+                socket.emit("PLAY", {'x_player' : data.screen_name, 'o_player' : data.opponent});
+            }
+            
         }
     });
 
     socket.on('MOVE', async (data) => { //data holds .screen_name and .move_placement (1-9)
-        console.log(data.screen_name + " is moving " + data.move_placement); 
-        //socket.emit("game-msg", {'media': "MOVE", 'message': "MOVE", 'player': data.screen_name}); //sends the move to the opponent
+        console.log(data.screen_name + " is moving to " + data.move_placement); 
+        //socket.emit("MOVE", {'move_placement' : data.move_placement});
+
+        //get opponent name
+        let opponent = await returnOpponent(data.screen_name);
+
+        io.to(returnSocketID(opponent)).emit("MOVE", {'screen_name' : data.screen_name, 'move_placement' : data.move_placement});
+        //socket.emit("MOVE", {'move_placement' : data.opponent, 'o_player' : data.screen_name});
+            
     });  
 
     //maybe will be removed? Used for constantly refreshing the page
@@ -372,6 +386,23 @@ async function whichLetterIsOp(opsName) {
             }
         });
     });
+}
+
+async function returnOpponent(you) {
+    return new Promise((resolve, reject) => {
+        var query="SELECT * FROM players WHERE ? IN (x_player, o_player)";
+        dbCon.query(query, [you], function (error, result) {
+            if (error) {
+                return reject(error);
+            }
+            if (result[0].x_player == you) {
+                resolve(`${result[0].o_player}`);
+            } else {
+                resolve(`${result[0].x_player}`);
+            }
+        });
+    });
+
 }
 
 function returnSocketID(name) {

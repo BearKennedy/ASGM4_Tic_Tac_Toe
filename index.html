@@ -47,6 +47,24 @@
                   }
         	});
 
+            // when the user is connected to an opponent
+            var whoAmI;
+            connectedSocket.on("PLAY", function (message) {
+			//alert(message.x_player + " is x\n" + message.o_player + " is o");
+                  let opponent;
+
+                  if(whoAmI == 'x') {
+                        opponent = message.o_player;
+                  } else {
+                        opponent = message.x_player;
+                  }
+                  
+                  document.getElementById("x_screen").innerHTML = "X: " + message.x_player;
+                  document.getElementById("o_screen").innerHTML = "O: " + message.o_player;
+                  inGame = true;
+                  //GAME IS STARTED
+        	});
+
             // if user log-in fails 
             connectedSocket.on("LOGIN-FAIL", function (message) {
                   // tell user it failed 
@@ -59,17 +77,23 @@
             // if log-in is good then
             connectedSocket.on("LOGIN-OK", function (message) {
                   // display message to user and update viewport 
-                  alert("MADE IT");
+                  //alert("MADE IT");
                   document.getElementById('main_box').style.visibility = 'visible';
                   document.getElementById('Log_in_screen').style.visibility = 'hidden';
         	});
+
+            connectedSocket.on("MOVE", function (message) {
+                  alert(message.screen_name + " is moving to " + message.move_placement);
+                  document.getElementsByName(message.move_placement)[0].click();
+                  //doesntwork for some reason
+        	});
       }
 
-      let Intervalid //var we use to refresh idles and active games 
+      let Intervalid; //var we use to refresh idles and active games 
 
       // function that we call to update players and idles 
       function update_players(){
-            Intervalid ??= setInterval(Update_players, 1000)
+            Intervalid ??= setInterval(Update_players, 1000);
       }
       // function that sends command to server to update all users idle and active games
       function Update_players(){
@@ -80,6 +104,7 @@
       var screen_name = "";
       // function we call when user wants to log out
       function logout() {
+            inGame = false;
             // send server screen name that wants to log out 
             connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
             // set connected socket status to null
@@ -97,6 +122,15 @@
             document.getElementById("Help_menu").style.visibility = 'hidden'
       }
 
+      var inGame = false;
+      function do_a_move(where) {
+            if(inGame) {
+                  sendToServer("MOVE", {'screen_name': screen_name, 'move_placement': where});
+            } else {
+                  alert("JOIN A GAME");
+            }
+      }
+
       //////////////////////////// DATA BASE STUFF ///////////////////////////
       // function we use to add things to the mysql database
       function addToDB() {
@@ -107,7 +141,7 @@
             // connect to server if we need to 
             if (!connectedSocket) createSocket();
             // send request to server 
-            connectedSocket.emit("TO-SERVER LOGIN", screen_name);
+            sendToServer("TO-SERVER LOGIN", screen_name);
       }
 
       // show X or O selection and lets user pick one of the two
@@ -119,8 +153,10 @@
 
       // after user makes a choice: send info to server 
       function makeGame(choice) {
+            whoAmI = choice;
             //makes server call with screen name and choice
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
+            inGame = true;
       }
       
       // function attached to join game button that use hits to join another users game
@@ -129,8 +165,6 @@
             ops_name = (button.id).replace("join_", "");
             //  send info to server with object 
             sendToServer('JOIN', {'screen_name' : screen_name, 'opponent' : ops_name});
-            // Show game table
-            toggle_game_div();
       }
 
       // use TBD!
@@ -165,7 +199,8 @@
       var move_count  = 0;
       // function we call whenever we want to take a turn
       // function takes in a button since the button to move is the game square itself 
-      function Take_turn(button){
+      function Take_turn(button, number){
+            
       // gets the parent element of the button 
        const gameSquare = button.parentElement;
         // Create a new image element
@@ -173,6 +208,7 @@
        newImage.style.maxWidth = '100%';
        newImage.style.maxHeight = '100%'; 
        newImage.style.display = 'block'; 
+      do_a_move(number);
 
         // if its x's turn, then the next click will be an X
         if (isXTurn) {
@@ -684,21 +720,21 @@
             <div id = "game_window" style="">
                   <!-- header for game table that shows players and who's turn it is -->
                   <div id = "game_info"> 
-                        <div class = "game_info_categories"> <h1 style="text-align: center">X: Screenname</h1></div>
+                        <div class = "game_info_categories"> <h1 style="text-align: center" id = x_screen>X: Screenname</h1></div>
                         <div class = "game_info_categories"> <h1 style="text-align: center" id = "whoTurn">X's TURN</h1></div>
-                        <div class = "game_info_categories"> <h1 style="text-align: center">O: Screenname</h1></div>
+                        <div class = "game_info_categories"> <h1 style="text-align: center" id = o_screen>O: Screenname</h1></div>
                   </div>
             <div id = "game_contain_squares"> 
                   <!-- game squares with the buttons -->
-                  <div class = "game_squares" name = "1"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "2"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "3"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "4"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "5"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "6"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "7"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this)"></button></div>
-                  <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
+                  <div class = "game_squares" name = "1"><button class="board_button" onclick="Take_turn(this, 1)"></button></div>
+                  <div class = "game_squares" name = "2"><button class="board_button" onclick="Take_turn(this, 2)"></button></div>
+                  <div class = "game_squares" name = "3"><button class="board_button" onclick="Take_turn(this, 3)"></button></div>
+                  <div class = "game_squares" name = "4"><button class="board_button" onclick="Take_turn(this, 4)"></button></div>
+                  <div class = "game_squares" name = "5"><button class="board_button" onclick="Take_turn(this, 5)"></button></div>
+                  <div class = "game_squares" name = "6"><button class="board_button" onclick="Take_turn(this, 6)"></button></div>
+                  <div class = "game_squares" name = "7"><button class="board_button" onclick="Take_turn(this, 7)"></button></div>
+                  <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this, 8)"></button></div>
+                  <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this, 9)"></button></div>
             </div>
             <!-- leave game div-->
             <div width="100%" style= "">
