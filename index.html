@@ -607,9 +607,7 @@
 
             const view_game_table = document.createElement('button');
             view_game_table.id = 'Result_close_button';
-
             view_game_table.onclick = post_game_peek
-            
             view_game_table.innerHTML = "View game board ";
 
             rmc.appendChild(win_msg);
@@ -621,7 +619,6 @@
       // runs connection as soon as script loads
       //createSocket();
       update_players();
-      
 </script>
 </head>
 <body>
@@ -631,7 +628,9 @@
             <th colspan="3" style="font-size: 200%;"> <img src="X.png" alt="X" style="height: 40px; float: left;"> THE BEST TIC-TAC-TOE WEBSITE <img src="O.webp" alt="P" style="height: 40px; float: right;" ></th>
       </tr>
       <tr>
-            <th colspan="3" style="font-size: 150%; text-align: right; cursor: pointer;" onclick = >
+                  <!--title card that holds makers, help and logout -->
+            <th colspan="3" style="font-size: 150%; text-align: right;" >
+                  stuff by the boys
                   <a id= help_box style="text-decoration: none;" href="#"  onclick="open_help_menu()">Help |</a>
                   <a id="help_box" style="text-decoration: none;" href="#" onclick="logout(); return false;">Logout</a> 
             </th>
@@ -639,59 +638,58 @@
 
       </table>
 
+      <!--div that holds the login screen-->
       <div id="Log_in_screen" style="visibility: visible;">
            <h1 style="font-family: Arial, Helvetica, sans-serif">Please create an account:</h1>
-
-            <form onsubmit="return false;"> <!-- doesnt reload the page and hides the menu -->
+            <!-- form that gets users username-->
+            <form onsubmit="return false;"> <!-- doesn't reload the page and hides the menu -->
                   <label style="font-size: 25px; font-family: Arial, Helvetica, sans-serif" for="Screenname">Screen Name:</label><br>
                   <input type="text" id="Screenname"  placeholder="John"><br>
-
-                  <div id= "name_taken" class="err_msg hidden">That Screenname is already taken. Please try a new name</div>
-                  <div id = "empty name" class=" err_msg hidden"> name cannot be null</div>
-
+                  <!-- on submit, add the username to database-->
                   <input type="submit" value="Submit" onclick="addToDB()">
             </form> 
-            <!-- send error here -->
+            <!-- send error here, if theres an error with adding the username to the database
+             this gets changed -->
       <h1 id="error_msg" style="color: red;">error</h1>
       </div>
 
+      <!-- the main table that holds everything, hidden until user logs in right-->
       <div id = "main_box" style="visibility: hidden;">
             <center>
             <div id = "idle">
                   idle users:
             </div>
+            <!-- header for available games -->
             <div id = "avialable_games">
                  <p  id="avialable_games_headder"> Active games:
                   <button  id = "new_game_button" onclick = "newGameButton()">New Game</button></p>
                   <table id = "actives" style = "border: 2px solid black; border-collapse: collapse; text-align: center; width: 100%; ">
-                        
                   </table>
-                  
             </div>
-            
-            
+            <!--div for selection X or O-->
             <div id="x_or_o" style="visibility: hidden;">
-                  
                   <div id = "x_or_o_content">
                         <h1>Pick a side to play</h1>
                         <img src="X.png" style="width: 100px; margin-right: 200px;">
                         <img src="O.webp" style="width: 100px;">
                         <div id ="button-container">
-                              
-                  <button id="pick_x" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('x')"> X </button>
-                  <button id="pick_o" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('o')"> O </button>
-
+                        <!-- the buttons the user can pick from-->
+                        <button id="pick_x" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('x')"> X </button>
+                        <button id="pick_o" onclick = "document.getElementById('x_or_o').style.visibility = 'hidden'; makeGame('o')"> O </button>
                         </div>
                   </div>
             </div>
 
+            <!-- where the tic-tac-toe game is played -->
             <div id = "game_window" style="">
-            <div id = "game_info"> 
-                  <div class = "game_info_categories"> <h1 style="text-align: center">X: Screenname</h1></div>
-                  <div class = "game_info_categories"> <h1 style="text-align: center" id = "whoTurn">X's TURN</h1></div>
-                  <div class = "game_info_categories"> <h1 style="text-align: center">O: Screenname</h1></div>
-            </div>
+                  <!-- header for game table that shows players and who's turn it is -->
+                  <div id = "game_info"> 
+                        <div class = "game_info_categories"> <h1 style="text-align: center">X: Screenname</h1></div>
+                        <div class = "game_info_categories"> <h1 style="text-align: center" id = "whoTurn">X's TURN</h1></div>
+                        <div class = "game_info_categories"> <h1 style="text-align: center">O: Screenname</h1></div>
+                  </div>
             <div id = "game_contain_squares"> 
+                  <!-- game squares with the buttons -->
                   <div class = "game_squares" name = "1"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "2"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "3"><button class="board_button" onclick="Take_turn(this)"></button></div>
@@ -702,20 +700,21 @@
                   <div class = "game_squares" name = "8"><button class="board_button" onclick="Take_turn(this)"></button></div>
                   <div class = "game_squares" name = "9"><button class="board_button" onclick="Take_turn(this)"></button></div>
             </div>
+            <!-- leave game div-->
             <div width="100%" style= "">
                   <h1 onclick="toggle_game_div(),leave_game()" style="cursor: pointer;">LEAVE</h1>
-            </div>
-            </center>
+      </div>
+      </center>
       </div>
       </div>
-      <div>
-            
-      </div>
-
+     <!--<div>
+      </div>--> 
+      <!-- div for help menu-->
       <div id = "Help_menu" style="visibility: hidden;">
-            <<!-- remove 'none'absolute-->
             <div class="Help_menu-content">
+                  <!-- close button-->
                   <button onclick="close_help_menu()" class="close-button">X</button> 
+                  <!-- help menu content -->
                   <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
                   <h3>Created by Ryan and Bear:</h3>
                   <p> Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
@@ -740,18 +739,12 @@
                         adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
                   </p>
                         
-
-                  
                   </div>
             </div>
       </div>
+      <!-- div that holds the result menu that we add stuff too later on -->
       <div id="result_menu" style="display: none ">
             <div id="result_menu-content">  
       </div>
 </body>
 </html>
-
-
-<!-- MENY NOTES TO NOTE 
- #1 We have a function to give ckiclys back to buttons. we just dont have a spot to call it yet 
- since we need to reset game board after each join and whatnot -->
