@@ -1,135 +1,153 @@
 <!DOCTYPE html>
 <html>
 <head>
+      <!-- link to style sheet-->
 <link rel="stylesheet" type="text/css" href="asg4.css">
 
  <!-- Include socket.io client API from cdn //-->
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
 <script>
-      /////////////////////// SOCKET_IO STUFF ///////////////
-     // USEFUL NOTES???
-
-      // TO-SERVER LOGIN screen-name 
-      // server: LOGIN-OK list-of-logged-in-screennames-and-status
-      // NEW-GAME screen-name choice-of-X-or-O
-      // server: UPDATED-USER-LIST-AND-STATUS list-of-screen-names status
-      // JOIN client’s-screen-name opponent’s-screen-name
-      // server: UPDATED-USER-LIST-AND-STATUS list-of-screen-names status
-      // PLAY X-player-screen-name O-player-screen-name (server to only the 2 players)
-      // Send message to Server. 
-	// Will create a connection if one is not already established
-      // MOVE screen-name cell-number (1 to 9)
-      // END-GAME, [ winner [ X | O ] screen-name] OR END-GAME, D
-     
+      /////////////////////// SOCKET_IO  ///////////////
+      // function that sends messages to server: message
 	function sendToServer(messageType, message) {
   		try {
+                  // if were not connected to a socket, connect to it 
     			if (!connectedSocket) createSocket();
+                  //send the server the message 
     			connectedSocket.emit(messageType, message); // send msg to server
   		} catch (err) {
+                  // if ending message didn't work then display error to user
     			alert("System error 987: " + err + " contact us, or try again later");
   		}
 	}
+      // sets value to null to begin with
       var connectedSocket = null;
+      //function that connects us to a socket 
       function createSocket() {
             try {
+                  //connect to socket on the port 8081
                   connectedSocket = io(window.location.hostname+":8081");
+
+                  /// WE SHOULD SET CONNECTED SOCKET TO TRUE OR SOMETHING RIGHT?
             } catch (err) {
+                  // if theres an error display message to user
                   alert('connectedSocket create error, contact us');
+                  // set value to null
                   connectedSocket = null;
                   return;
             }
-
+            //on server message received then do...
             connectedSocket.on("general-msg", function (message) {
-			//alert(message.message);
+			// if message we received is activeList then we...
                   if(message.activeList) {
+                        // update the idles and active games page 
                         fillActives(message.activeList);
                         fillIdles(message.idleList);
                   }
         	});
 
+            // if user log-in fails 
             connectedSocket.on("LOGIN-FAIL", function (message) {
+                  // tell user it failed 
 			alert(message.message);
+                  //display error message on screen 
                   document.getElementById("error_msg").innerHTML = message.message;
                   
         	});
 
+            // if log-in is good then
             connectedSocket.on("LOGIN-OK", function (message) {
+                  // display message to user and update viewport 
                   alert("MADE IT");
                   document.getElementById('main_box').style.visibility = 'visible';
                   document.getElementById('Log_in_screen').style.visibility = 'hidden';
-			
-
         	});
-
       }
 
-      let  Intervalid 
+      let Intervalid //var we use to refresh idles and active games 
 
+      // function that we call to update players and idles 
       function update_players(){
             //Intervalid ??= setInterval(Update_players, 1000)
       }
+      // function that sends command to server to update all users idle and active games
       function Update_players(){
-            
            connectedSocket.emit("UPDATE");
       }
-      
-      
+
+      //set up var
       var screen_name = "";
-      
+      // function we call when user wants to log out
       function logout() {
+            // send server screen name that wants to log out 
             connectedSocket.emit("TO-SERVER LOGOUT", screen_name);
+            // set connected socket status to null
             connectedSocket = null;
+            // hides the main display and show the login screen again 
             document.getElementById("main_box").style.visibility = 'hidden';
             document.getElementById('Log_in_screen').style.visibility = 'visible'
       }
+      // function that opens help menu
       function open_help_menu(){
             document.getElementById("Help_menu").style.visibility = 'visible'
       }
-
+       // function that closes help menu
       function close_help_menu(){
             document.getElementById("Help_menu").style.visibility = 'hidden'
       }
 
       //////////////////////////// DATA BASE STUFF ///////////////////////////
-
+      // function we use to add things to the mysql database
       function addToDB() {
+            // get user sent screen name
             screen_name = document.getElementById('Screenname').value;
+            // if its null reject it 
             if (screen_name == '') {return}
+            // connect to server if we need to 
             if (!connectedSocket) createSocket();
+            // send request to server 
             connectedSocket.emit("TO-SERVER LOGIN", screen_name);
       }
 
+      // show X or O selection and lets user pick one of the two
       function newGameButton() {
             //make the pop up come up
             // select x or o
             document.getElementById('x_or_o').style.visibility = 'visible';
       }
 
+      // after user makes a choice: send info to server 
       function makeGame(choice) {
             //makes server call with screen name and choice
             connectedSocket.emit("NEW-GAME", {'screen_name' : screen_name, 'choice_of_X_or_O': choice});
       }
       
+      // function attached to join game button that use hits to join another users game
       function join_game(button){
+            // gets opponents name and changes the button id for use later 
             ops_name = (button.id).replace("join_", "");
+            //  send info to server with object 
             sendToServer('JOIN', {'screen_name' : screen_name, 'opponent' : ops_name});
+            // Show game table
             toggle_game_div();
       }
+
+      // use TBD!
       function leave_game(button){
             sendToServer('EXIT', button);
-
       }
-
+      // function that we call to fill current games
       function fillActives(givenHTML) {
             document.getElementById("actives").innerHTML = givenHTML;
       }
-      
+        // function that we call to fill idle players
       function fillIdles(givenHTML) {
             document.getElementById("idle").innerHTML = givenHTML;
       }
 
-            /////////////////////Game board actions//////////////////////////
+      /////////////////////Game board actions//////////////////////////
+      // function that we call to show game table 
       function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
@@ -138,45 +156,59 @@
             }
       }
 
+      // declare variables to use later 
       let isXTurn = true; 
+      // values we use to determent if a block in the game is an x or an o
       let x_num = 2;
       let o_num = 1;
+      // move counter
       var move_count  = 0;
-       function Take_turn(button){
+      // function we call whenever we want to take a turn
+      // function takes in a button since the button to move is the game square itself 
+      function Take_turn(button){
+      // gets the parent element of the button 
        const gameSquare = button.parentElement;
-          
-
         // Create a new image element
-        const newImage = document.createElement('img');
-        newImage.style.maxWidth = '100%';
-        newImage.style.maxHeight = '100%'; 
-        newImage.style.display = 'block'; 
+       const newImage = document.createElement('img');
+       newImage.style.maxWidth = '100%';
+       newImage.style.maxHeight = '100%'; 
+       newImage.style.display = 'block'; 
 
+        // if its x's turn, then the next click will be an X
         if (isXTurn) {
             newImage.src = 'X.png'; 
             newImage.alt = 'X';
+            // sets the area where the button is, that spots id to a number we relate to X
+            // that being an even number which we can use later for game logic
             button.parentElement.id = x_num;
+            // changes the game board header to display who's turn it is 
             document.getElementById("whoTurn").innerHTML = "O's Turn";
         } else {
+            // if its O's turn then we do the same thing but with the o's
             newImage.src = 'O.webp'; 
             newImage.alt = 'O';
+            // here we instead set the id of the buttons position to an odd number
+            // we relate odd numbers to O's moves and even for X's moves
             button.parentElement.id = o_num;
             document.getElementById("whoTurn").innerHTML = "X's Turn";
         }
-        console.log(button.parentElement.id)
+        // removes the button from the game 
         button.remove();
+        // adds the image to the spot on the board 
         gameSquare.appendChild(newImage);
-         x_num += 2;
-         o_num += 2;
-       
+        // increases the numbers for X and O since were updating ID's and ID's have to be unique
+        x_num += 2;
+        o_num += 2;
+        // change it to O's turn
         isXTurn = !isXTurn;
-
+        // increases move counter 
         move_count ++
             
-            if (move_count >= 4){
-                 Game_status_check()
-            }
-       }
+        // if were on move 4 or grater, then we can start checking the board state 
+        if (move_count >= 4){
+            Game_status_check()
+        }
+      }
 
             let ABC = true
             let DEF = true

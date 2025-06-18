@@ -20,5 +20,5 @@ dbCon.connect(function(error){
   	console.log('DBConnection established');
 });
 
-// export handle to the connection, for use in other models to access thd DB
+// export handle to the connection, for use in other files to access thd DB
 exports.dbCon = dbCon;
