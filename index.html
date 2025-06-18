@@ -60,6 +60,7 @@
                   board_reset();
                   let opponent;
                   isXTurn = true; 
+                  move_count = 0;
 
                   if(whoAmI == 'x') {
                         opponent = message.o_player;
@@ -651,6 +652,7 @@
             win_msg.appendChild(view_game_table)
             // disable the buttons from the table 
             disable_game_table()
+            
             
       }
 
