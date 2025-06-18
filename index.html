@@ -210,33 +210,36 @@
         }
       }
 
-            let ABC = true
-            let DEF = true
-            let GHI = true
+      // declares vars to use later that we need to be global or initialized 
 
-            let ADG = true
-            let BEH = true
-            let CFI = true
+      // a var for each win line  
+      let ABC = true
+      let DEF = true
+      let GHI = true
 
-            let AEI =  true
-            let CEG = true 
+      let ADG = true
+      let BEH = true
+      let CFI = true
 
-            let A_val 
-            let B_val 
-            let C_val
+      let AEI =  true
+      let CEG = true 
 
-            let D_val 
-            let E_val 
-            let F_val
+      // var for each box 
+      let A_val 
+      let B_val 
+      let C_val
 
-            let G_val 
-            let H_val 
-            let I_val 
+      let D_val 
+      let E_val 
+      let F_val
 
-            
+      let G_val 
+      let H_val 
+      let I_val 
+
+      // function that runs game logic and checks current status of the game 
       function Game_status_check(){
-            console.log (ABC)
-            
+            //gets values for each box and sets to a var
             const A = document.getElementsByName('1')[0];
             const B = document.getElementsByName('2')[0];
             const C = document.getElementsByName('3')[0];
@@ -249,6 +252,10 @@
             const H = document.getElementsByName('8')[0];
             const I = document.getElementsByName('9')[0];
             
+            // sets some variables we declared earlier and sees if there X's in the box or O's
+            // we take the ID of each box, and preform MOD 2 on each.
+            // this will always result in a 1 (O's) or 0 (1) and as disused earlier 
+            // even is X's and odds are O's
             A_val =  (parseInt(A.id) % 2)
             B_val =  (parseInt(B.id) % 2)
             C_val =  (parseInt(C.id) % 2)
@@ -261,6 +268,8 @@
             H_val =  (parseInt(H.id) % 2)
             I_val =  (parseInt(I.id) % 2)
 
+            // checks each value to see if its been defined yet, aka if the box has a move made in it 
+            // yet
             const A_defined = !(isNaN(A_val));
             const B_defined = !(isNaN(B_val));
             const C_defined = !(isNaN(C_val));
@@ -273,74 +282,89 @@
             const H_defined = !(isNaN(H_val));
             const I_defined = !(isNaN(I_val));
 
+            ////// DRAW DETECTION ////////////////////////////////
 
+            /* How the draw detection works in this program is essential 
+            sudoku. essential for each line a win could be made, we check to see
+            if its possible for a win to happen, say we look at the top 3 boxes across 
+            those boxes are labeled A B and C. 
+
+            We check Box A and be to see if there both defined if so we see if there the same value
+            if there not defined we ignore it, but if they are and the two values are different we say
+            that up line to win across is no longer able to be won in or "dead".
+
+            we do the same for A and C then B and C and if there all alive and able to be won within 
+            then we continue as normal. this logic is repeated for each line across, down and diagonal
+            if any of them are declared "dead" then we know that is not a way either player can win within
+
+            draw detection is also extended to function win_on_last_move. 
+            */
+            
+            // across 
             if ((A_defined && B_defined) && A_val  != B_val ) ABC = false 
             if ((A_defined && C_defined) && A_val  != C_val ) ABC = false
             if ((B_defined && C_defined) && B_val  != C_val ) ABC = false
-            console.log("ABC:")
-            console.log(ABC)
+            // uncomment log messages on front end to see how this sort of thing works
+            //console.log("ABC:")
+            //console.log(ABC)
             if ((E_defined && D_defined) && E_val  != D_val ) DEF = false 
             if ((E_defined && F_defined) && E_val  != F_val ) DEF = false
             if ((D_defined && F_defined) && D_val  != F_val ) DEF = false
-            console.log("DEF:")
-            console.log(DEF)
+            //console.log("DEF:")
+            //console.log(DEF)
             if ((G_defined && H_defined) && G_val  != H_val ) GHI = false 
             if ((G_defined && I_defined) && G_val  != I_val ) GHI = false
             if ((H_defined && I_defined) && H_val  != I_val ) GHI = false
-             console.log("GHI:")
-            console.log(GHI)
-
+            //console.log("GHI:")
+            //console.log(GHI)
 
             //DOWN
             if ((A_defined && D_defined) && A_val  != D_val ) ADG = false 
             if ((A_defined && G_defined) && A_val  != G_val ) ADG = false
             if ((D_defined && G_defined) && D_val  != G_val ) ADG = false
-             console.log("ADG:")
-            console.log(ADG)
+            //console.log("ADG:")
+            //console.log(ADG)
             if ((B_defined && E_defined) && B_val  != E_val ) BEH = false 
             if ((B_defined && H_defined) && B_val  != H_val ) BEH = false
             if ((E_defined && H_defined) && E_val  != H_val ) BEH = false
-             console.log("BEH:")
-            console.log(BEH)
+            //console.log("BEH:")
+            //console.log(BEH)
             if ((C_defined && F_defined) && C_val  != F_val ) CFI = false 
             if ((C_defined && I_defined) && C_val  != I_val ) CFI = false
             if ((F_defined && I_defined) && F_val  != I_val ) CFI = false
-            console.log("CFI:")
-            console.log(CFI)
+            //console.log("CFI:")
+            //console.log(CFI)
+
+            //diagonal 
             if ((A_defined && E_defined) && A_val  != E_val ) AEI = false 
             if ((A_defined && I_defined) && A_val  != I_val ) AEI = false
             if ((E_defined && I_defined) && E_val  != I_val ) AEI = false
-            console.log("AEI:")
-            console.log(CEG)  
+            //console.log("AEI:")
+            //console.log(CEG)  
             if ((C_defined && E_defined) && C_val  != E_val ) CEG = false 
             if ((C_defined && G_defined) && C_val  != G_val ) CEG = false
             if ((E_defined && G_defined) && E_val  != G_val ) CEG = false
 
-
+            // an array of all lines of winning 
             const conditions = [ABC,DEF,GHI,ADG,BEH,CFI,AEI,CEG];
-            const x_row = []
 
-            // THIS WORKS I THINK????
-                  let trueCount = 0;
-                  for (let i = 0; i < conditions.length; i++) {
+            // sets up counter and also resets it after each function call
+            let trueCount = 0;
+            // for the amount of lines of winning, loop
+            for (let i = 0; i < conditions.length; i++) {
+                  // if the line of winning is "dead" add to counter
                   if (!conditions[i]) {
                         trueCount++;
-                        console.log("LICK")
-                        console.log(move_count)
-                        console.log(trueCount)
                   }
-                  }
-                  if (trueCount >= 7 && move_count > 6  && !win_on_last_move()){
-                        draw()
-                  }
+            }
+            // if there is 2 or less avenues of winning and its past turn 6 and 
+            // there is no way for X to win on the last move the game is a draw 
+            if (trueCount >= 7 && move_count > 6  && !win_on_last_move()){
+                  draw()
+            }
 
-
-      // game logic 
-            //across 
-
-            // this one can be removed i
-            // keep this in its the old draw method 
-
+            // this one can be removed maybe
+            // keep this in its the old draw method
             ///testing block 1 
             /*
             // catches error when last move results in a win, 
@@ -349,17 +373,28 @@
                   draw();
             }*/
 
+            ///////////GAME LOGIC////////////////////
+            // here we check to see if there is a win detected
+            // first we see if the avenue of play is "dead" or not
+            // if it is we don't have to see if there a win or not since we know there cannot one
+
+            // so, if line of play ABC is not "dead"
+            // across
             if (ABC){
+                  // if box A, B, and C all have the same value then we know theres win
                   if (( B_val == A_val) && (C_val == A_val  )) {
+                        // if A is an even number then X has won
                         if(A_val  == 0){
                               X_wins();
-                        }            
+                        }
+                        // if A is an odd number then 0's have won
                         else{
                               O_wins()
                         }
                   }
             }
-             if(DEF){ 
+            // this logic is repeated for each avenue of winning 
+            if(DEF){ 
                   if (( E_val == D_val) && (F_val == D_val )){
                         if(D_val == 0){
                               X_wins()
@@ -370,7 +405,7 @@
                   }
             }
 
-             if(GHI){
+            if(GHI){
                   if (( H_val  == G_val  ) && (I_val == G_val )){
                         if(G_val == 0){
                               X_wins()
@@ -381,7 +416,7 @@
                   }      
             } 
             //down
-             if(ADG){
+            if(ADG){
                   if (( D_val == A_val ) && (G_val  == A_val  )){
 
                         if(A_val == 0){
@@ -393,7 +428,7 @@
                         }
                   }
             }
-             if (BEH){
+            if (BEH){
                   if (( E_val == B_val ) && (H_val  == B_val )){
                         if(B_val == 0){
                               X_wins()
@@ -403,7 +438,7 @@
                         } 
                   }
             } 
-             if(CFI){
+            if(CFI){
                   if (( F_val  == C_val ) && (I_val == C_val )){
                         if(C_val == 0){
                               X_wins()
@@ -414,7 +449,7 @@
                   }
             } 
             // diagonal
-             if (AEI){
+            if (AEI){
                   if (( E_val == A_val ) && (I_val == A_val)){
                         if(A_val == 0){
                         X_wins()
@@ -424,7 +459,7 @@
                         } 
                   }
             }
-             if (CEG){
+            if (CEG){
 
                   if (( E_val  == C_val ) && (G_val  == C_val )){
                         if(C_val == 0){
@@ -435,10 +470,6 @@
                         } 
                   }
             } 
-            else{
-                  console.log("not a winner")
-            } 
-      
       }
       function win_on_last_move(){ 
             A_val = A_val ?? 0; // If num1 is undefined or null, use 0
