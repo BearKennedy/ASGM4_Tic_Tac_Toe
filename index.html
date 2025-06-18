@@ -193,6 +193,18 @@
       // use TBD!
       function leave_game(button){
             sendToServer('EXIT', button);
+            board_reset()
+      }
+
+      function board_reset(){
+            for (let i = 1; i <10; i++) {
+                 let x = i.toString();
+            const gameSquareDiv = document.getElementsByName(x)[0]; // Get your target div
+            const imageToRemove = gameSquareDiv.querySelector('img')
+            imageToRemove.remove();
+            gameSquareDiv.id = ""
+            }
+            enable_game_table() // turn buttons back on, and show buttons
       }
       // function that we call to fill current games
       function fillActives(givenHTML) {
@@ -529,16 +541,26 @@
 
             // if all lines in a row have the possibility to be X's then we return true
             // continuing the game
-            if (A_val + B_val + C_val == 0){return true}
-            if (D_val + E_val + F_val == 0){return true}
-            if (G_val + H_val + I_val == 0){return true}
-            if (A_val + D_val + G_val == 0){return true}
-            if (B_val + E_val + H_val == 0){return true}
-            if (C_val + F_val + I_val == 0){return true}
-            if (A_val + E_val + I_val == 0){return true}
-            if (C_val + E_val + G_val == 0){return true}
-            // if theres no way x can win, then we return false, ending the game
-            return false
+            if (A_val + B_val + C_val == 0) {
+                  return true;
+                  } else if (D_val + E_val + F_val == 0) {
+                  return true;
+                  } else if (G_val + H_val + I_val == 0) {
+                  return true;
+                  } else if (A_val + D_val + G_val == 0) {
+                  return true;
+                  } else if (B_val + E_val + H_val == 0) {
+                  return true;
+                  } else if (C_val + F_val + I_val == 0) {
+                  return true;
+                  } else if (A_val + E_val + I_val == 0) {
+                  return true;
+                  } else if (C_val + E_val + G_val == 0) {
+                  return true;
+                  } else {
+    // if there's no way x can win, then we return false, ending the game
+    return false;
+}
       }
       // function that hides result menu 
       function hideResultMenu() {
