@@ -218,8 +218,10 @@
       function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
+                  document.getElementById('main_box').style.visibility = 'hidden'
             } else {
-                  document.getElementById('game_window').style.display = 'none';    
+                  document.getElementById('game_window').style.display = 'none';
+                  document.getElementById('main_box').style.visibility = 'visible'    
             }
       }
 
@@ -781,6 +783,7 @@
                         </div>
                   </div>
             </div>
+      </div>
 
             <!-- where the tic-tac-toe game is played -->
             <div id = "game_window" style="display: none;">

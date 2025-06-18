@@ -1,8 +1,5 @@
 /* Style Sheet for index.html */
 
-/* for assignment 4 */  
-
-/* header table of the page */
 #headtable, th, td {
     position: relative;
     border: 2px solid black;
@@ -15,7 +12,6 @@
     display: none;
 }
 
-/* style for all close button */
 .close-button { /* Add a class for the button */
     position: absolute; /* keeps button in top right*/
     top: 0px;
@@ -25,7 +21,7 @@
     width: 30px;
 }
 
-/* button colors when hovered over */
+/*button colors when hovered over*/
 .close-button:hover{
     background-color: red;
     color: #ffffff;
@@ -53,8 +49,6 @@
     /*default fonts*/
     font-family: Arial, Helvetica, sans-serif;
 }
-
-/* for content inside help menu box */
 .Help_menu-content {
     position: relative; /* lets us keep the button in the top right of the overlay not just the screen */
     background-color: rgb(255, 255, 255); 
@@ -67,8 +61,6 @@
     overflow-y: auto; /*lets the content scroll down */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
-
-/* another close button */
 .close-button {
     position: absolute;
     top: 0px;
@@ -81,7 +73,6 @@
     color: #ffffff;
 }
 
-/* big pop up when the page is first loaded */
 #Log_in_screen{
     position: absolute;
     top: 50%;
@@ -89,17 +80,21 @@
     transform: translate(-50%, -50%); /* Centers based on its own size */
     width: 300px; /* Example fixed width */
     height: 400px; /* Example fixed height */
+    
     padding: 20px;
+
     background-color: white;
+
     /* Existing centering for its children: */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    /* z-index: -1; - Still cautious about this */
 }
 
-/* makes the input screen for logging in and signing up look nicer */
+/*makes the input screen for logging in and signing up look nicer*/
 input {
     display: block;
     width: 100%;
@@ -111,7 +106,6 @@ input {
     border-radius: 5px;
 }
 
-/* style for any submit buttons */
 input[type=submit]{
     background-image: linear-gradient(to right, rgb(255, 0, 0) , rgb(13, 182, 255));
     border: 3px solid rgb(0, 0, 0);
@@ -134,7 +128,6 @@ input[type=submit]:hover{
     font-weight: 900;
 }
 
-/* our main content box */
 #main_box {
     width: 100%;
     height: 1200px;
@@ -144,30 +137,29 @@ input[type=submit]:hover{
     text-align: center; /*centers text*/
 }
 
-/* box for the list of idle people */
 #idle {
     width: 35%;
     height: 400px;
     border: 2px solid black;
     margin: -2px;
+    
     text-align: center; /*centers text*/
     float: left;
     overflow-y:auto
 }
 
-/* box that holds active games */
 #avialable_games {
     width: calc(65% - 2px);
     height: 400px;
     border: 2px solid black;
     margin: -2px;
     margin-left: 0;
+    
     text-align: center; /*centers text*/
     float: left;
     overflow-y:auto
 }
 
-/* header above the active games box */
 #avialable_games_headder{
     display: flex;
     justify-content: space-between;
@@ -177,8 +169,6 @@ input[type=submit]:hover{
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 700;
 }
-
-/* style for the new game button */
 #new_game_button {
     border-bottom: 2px solid  rgb(0, 0, 0);
     border-left: 2px solid  rgb(0, 0, 0);
@@ -192,11 +182,10 @@ input[type=submit]:hover{
 
 }
 
-/* flexbox that contains all the play squares */
 #game_contain_squares {
     display: flex;
     border: 2px solid gray;
-    margin-top: 50px;
+    
     width: 500px;
     height: 500px;
     flex-wrap: wrap;
@@ -204,7 +193,8 @@ input[type=submit]:hover{
     align-items: center;
 }
 
-/* the game squares */
+
+
 .game_squares > * {
     flex: 1 1 0;
     margin: 0px;
@@ -220,7 +210,6 @@ input[type=submit]:hover{
     text-align: center;
 }
 
-/* contains the game infor boxes */
 #game_info {
     flex: 1 1 0;
     width: 100%;
@@ -232,7 +221,6 @@ input[type=submit]:hover{
     float: left;
 }
 
-/* game info boxes, uses flex to look nice */
 .game_info_categories{
     display: flex; 
     height: 80px; 
@@ -243,11 +231,14 @@ input[type=submit]:hover{
     text-align: center;
 }
 
+
 .board_button {
 background-color: rgb(255, 255, 255);
 }
 
-/* popup menu that shows the results of the game*/
+
+
+
 #result_menu  {
     position: fixed; /* Covers the entire viewport */
     /*removes defaults*/
@@ -263,13 +254,14 @@ background-color: rgb(255, 255, 255);
     /*keeps things formated in the center*/
     justify-content: center;
     align-items: center;
+
     /*default fonts*/
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* holds the content for the result menu above */
 #result_menu-content {
-    position: absolute;
+position: absolute;
+
     background-color: rgb(255, 255, 255); 
     padding: 20px;
     border-radius: 5px;
@@ -277,21 +269,20 @@ background-color: rgb(255, 255, 255);
     text-align: center;
     width: 75%;
     height: 35%;
+
     overflow-y: auto; /*lets the content scroll down */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     display: flex; /* Enables Flexbox for the container */
     justify-content: center; /* Centers items horizontally along the main axis */
     align-items: center; 
-}
 
-/* holds the button */
+}
 .button-container {
     display: flex;
     justify-content: center; /* Centers items horizontally */
     margin-top: 20px; /* Add some space above the button */
 }
 
-/* result close button style */
 #Result_close_button  {
     background-image: linear-gradient(to right, rgb(255, 0, 0) , rgb(13, 182, 255));
     border: 3px solid rgb(0, 0, 0);
@@ -302,13 +293,12 @@ background-color: rgb(255, 255, 255);
     align-items: center; 
     outline: black  solid 2px;
     text-shadow: 2px 2px #000000;
+
     font-family: Arial, Helvetica, sans-serif;
     margin: 30px;
     /*sets cursor to look right for clicking*/
     cursor: pointer;
 }
-
-/* style for when the button is hovered */
 #Result_close_button:hover{
     background-image: linear-gradient(to right, rgb(13, 182, 255) , rgb(255, 0, 0));
     color: rgb(0, 0, 0);
@@ -317,7 +307,6 @@ background-color: rgb(255, 255, 255);
     font-weight: 600;
 }
 
-/* box that allows you to choose x or o */
 #x_or_o {
     position: fixed; /* Covers the entire viewport */
     /*removes defaults*/
@@ -333,11 +322,10 @@ background-color: rgb(255, 255, 255);
     /*keeps things formated in the center*/
     justify-content: center;
     align-items: center;
+
     /*default fonts*/
     font-family: Arial, Helvetica, sans-serif;
 }
-
-/* content for the box that has you choose x or o */
 #x_or_o_content{
     position: relative; 
     background-color: rgb(255, 255, 255); 
@@ -353,8 +341,6 @@ background-color: rgb(255, 255, 255);
 
 
 }
-
-/* the pick x button and hover */
 #pick_x {
     background-color: #000000;
     border: 3px solid rgb(0, 0, 0);
@@ -380,7 +366,6 @@ background-color: rgb(255, 255, 255);
 background-color: rgb(255, 255, 255);
 }
 
-/* pick o button and hover style */
 #pick_o {
     background-color: #000000;
     border: 3px solid rgb(0, 0, 0);
@@ -408,7 +393,6 @@ background-color: rgb(255, 255, 255);
 background-color: rgb(255, 255, 255);
 }
 
-/* holds buttons */
 #button-container {
     text-align: center;
     width: fit-content;
@@ -416,9 +400,11 @@ background-color: rgb(255, 255, 255);
     padding-top: 75px; 
     padding-bottom: 50px;
 }
-
-/* indents the text inside the help box */
 .indented-paragraph {
   text-indent: 3em; /* Indent the first line by 3 times the current font size */
   line-height: 1.5; /* Good practice for readability */
 }
+
+#game_window{
+box-sizing: border-box;
+    text-align: center; }
