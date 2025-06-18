@@ -60,7 +60,7 @@
                   board_reset();
                   let opponent;
                   isXTurn = true; 
-                  move_count = 0;
+                  
 
                   if(whoAmI == 'x') {
                         opponent = message.o_player;
@@ -136,6 +136,7 @@
             // hides the main display and show the login screen again 
             document.getElementById("main_box").style.visibility = 'hidden';
             document.getElementById('Log_in_screen').style.visibility = 'visible'
+            document.getElementById("logout_button").style.visibility = 'hidden';
       }
       // function that opens help menu
       function open_help_menu(){
