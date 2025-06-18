@@ -384,95 +384,57 @@
                   // if box A, B, and C all have the same value then we know theres win
                   if (( B_val == A_val) && (C_val == A_val  )) {
                         // if A is an even number then X has won
-                        if(A_val  == 0){
-                              X_wins();
-                        }
+                        if(A_val  == 0){X_wins();}
                         // if A is an odd number then 0's have won
-                        else{
-                              O_wins()
-                        }
+                        else{ O_wins()}}
+            
                   }
-            }
             // this logic is repeated for each avenue of winning 
             if(DEF){ 
                   if (( E_val == D_val) && (F_val == D_val )){
-                        if(D_val == 0){
-                              X_wins()
-                        }
-                        else{
-                              O_wins()
-                        }
-                  }
+                        if(D_val == 0){ X_wins()}
+                        else{O_wins()}}
             }
 
             if(GHI){
                   if (( H_val  == G_val  ) && (I_val == G_val )){
-                        if(G_val == 0){
-                              X_wins()
-                        }
-                        else{
-                              O_wins()
-                        }      
-                  }      
-            } 
+                        if(G_val == 0){X_wins()}
+                        else{O_wins()}}      
+            }
             //down
             if(ADG){
                   if (( D_val == A_val ) && (G_val  == A_val  )){
-
-                        if(A_val == 0){
-                              
-                              X_wins()
-                        }
-                        else{
-                              O_wins()
-                        }
-                  }
+                        if(A_val == 0){ X_wins()}
+                        else{ O_wins()}}
             }
             if (BEH){
                   if (( E_val == B_val ) && (H_val  == B_val )){
-                        if(B_val == 0){
-                              X_wins()
-                        }
-                        else{
-                              O_wins()
-                        } 
-                  }
+                        if(B_val == 0){X_wins()}
+                        else{O_wins()} }
             } 
             if(CFI){
                   if (( F_val  == C_val ) && (I_val == C_val )){
-                        if(C_val == 0){
-                              X_wins()
-                        }
-                        else{
-                              O_wins()
-                        }
-                  }
+                        if(C_val == 0){X_wins()}
+                        else{O_wins()}}
             } 
             // diagonal
             if (AEI){
                   if (( E_val == A_val ) && (I_val == A_val)){
-                        if(A_val == 0){
-                        X_wins()
-                        }
-                        else{
-                        O_wins()
-                        } 
-                  }
+                        if(A_val == 0){X_wins()}
+                        else{O_wins()}}
             }
             if (CEG){
-
                   if (( E_val  == C_val ) && (G_val  == C_val )){
-                        if(C_val == 0){
-                        X_wins()
-                        }
-                        else{
-                        O_wins()
-                        } 
-                  }
+                        if(C_val == 0){X_wins()}
+                        else{O_wins()}}
             } 
       }
+      // function used for more draw detection to handle edge case of X
+      // being able to win the game on the last move
       function win_on_last_move(){ 
-            A_val = A_val ?? 0; // If num1 is undefined or null, use 0
+            // here we check to see if each value is null
+            // if it is we set its value to zero (AKA an X)
+            A_val = A_val ?? 0; // If A_val is undefined or null, use 0
             B_val = B_val ?? 0;
             C_val = C_val ?? 0;
 
@@ -484,97 +446,108 @@
             H_val = H_val ?? 0;
             I_val = I_val ?? 0;
 
-            if (A_val + B_val +C_val == 0){
-                  return true 
-            }
-            if (D_val + E_val +F_val == 0){
-                  return true 
-            }
-            if (G_val + H_val +I_val == 0){
-                  return true 
-            }
-            if (A_val + D_val +G_val == 0){
-                  return true 
-            }
-            if (B_val + E_val + H_val == 0){
-                  return true 
-            }
-            if (C_val + F_val +I_val == 0){
-                  return true 
-            }
-             if (A_val + E_val +I_val == 0){
-                  return true 
-            }
-             if (C_val + E_val +G_val == 0){
-                  return true 
-            }
+            /* then we see if the values in the win line are all x's
+            this is to find the last few open boxes and we assume that 
+            there all x's. this gets around there not being enough 
+            win lanes open 
+            while this function is only called on the last few terns 
+            it checks to see if x has any way to win in the last few turns
+            this issue arises from the game logic/ draw detection mentioned
+            before*/
+
+            // if all lines in a row have the possibility to be X's then we return true
+            // continuing the game
+            if (A_val + B_val + C_val == 0){return true}
+            if (D_val + E_val + F_val == 0){return true}
+            if (G_val + H_val + I_val == 0){return true}
+            if (A_val + D_val + G_val == 0){return true}
+            if (B_val + E_val + H_val == 0){return true}
+            if (C_val + F_val + I_val == 0){return true}
+            if (A_val + E_val + I_val == 0){return true}
+            if (C_val + E_val + G_val == 0){return true}
+            // if theres no way x can win, then we return false, ending the game
             return false
-       }
+      }
+      // function that hides result menu 
       function hideResultMenu() {
              document.getElementById("result_menu").style.display = "none";
       }
-
+      
+      // function that lets the user look at the game table after game results are posted
       function post_game_peek(){
-
+            // removes the result menu content for a moment
             document.getElementById("result_menu-content").style.display = "none";
+            // removes dark gray background
             document.getElementById("result_menu").style.backgroundColor = "rgba(0, 0, 0, 0)";
 
+            // sets a timer to show game result menu again 
             setTimeout(function() {
-            
-             document.getElementById("result_menu-content").style.display = "flex"
-             document.getElementById("result_menu").style.backgroundColor = "rgba(0, 0, 0, .5)";
+              // sows game menu again 
+            document.getElementById("result_menu-content").style.display = "flex"
+            // brings back the dark gray background
+            document.getElementById("result_menu").style.backgroundColor = "rgba(0, 0, 0, .5)";
             }, 2000); // Delay of 2000 milliseconds (2 seconds)
       }
-          function disable_game_table(){
+            // function that disables all game buttons. this is called after the results of the game 
+            // results are shown  
+      function disable_game_table(){
+            // for each game button 
             document.querySelectorAll('.game_squares button').forEach(elem => {
-             elem.disabled = true;
+                  // disable that button 
+                  elem.disabled = true;
             });
-
-            function enable_game_table(){
-                  document.querySelectorAll('.game_squares button').forEach(elem => {
-             elem.disabled = false;
-            });
-
-            }
       }
-
+            // same thing as disable_game_buttons but turns them back on 
+      function enable_game_table(){
+            document.querySelectorAll('.game_squares button').forEach(elem => {
+            elem.disabled = false;
+            });
+      }
+      // function that displays win message for X player winning 
       function X_wins(){
              
+            // sets consts to elements we use for result menu
             const rmc = document.getElementById("result_menu-content");
             const result_menu = document.getElementById("result_menu");
+            // display result menu
             result_menu.style.display = 'flex'; 
             rmc.innerHTML = ''// resets everything so last result screen does not show in new game
-
-            
+            // creates header for win screen
             const win_msg = document.createElement('h1');
+            // creates message with images and words all fancy
             win_msg.innerHTML = "<img src='X.png' style='height: 100px; vertical-align: middle;" +
                                     "margin-right: 50px;'>" +
                                     "X WINS!!!!" +
                                     "<img src='X.png' style='height: 100px; vertical-align: middle;"+
                                     "margin-left: 50px;'>";
-            
+
+            // makes a button to close the result menu and make it look nice
             const close_button = document.createElement('button');
             close_button.id = 'Result_close_button';
             close_button.innerHTML = "Close";
             close_button.style.width = "500px"
             close_button.style.height = "75px"
+            // give the button the functionality to hide the results
             close_button.onclick = hideResultMenu;
             close_button.style.display = 'flex';
             close_button.style.marginLeft = '25px'
 
+            // create button that lets user look at game results
             const view_game_table = document.createElement('button');
             view_game_table.id = 'Result_close_button';
-
+            // give the button functionality 
             view_game_table.onclick = post_game_peek
-            
             view_game_table.innerHTML = "View game board ";
-
+            // append the win message to the result menu
             rmc.appendChild(win_msg);
+            // attach the buttons to the win message 
             win_msg.appendChild(close_button);
             win_msg.appendChild(view_game_table)
+            // disable the buttons from the table 
             disable_game_table()
       }
 
+      // same deal with the O results, only this time the content is regarding the O win results 
       function O_wins(){
             const rmc = document.getElementById("result_menu-content");
             const result_menu = document.getElementById("result_menu");
@@ -599,9 +572,7 @@
 
             const view_game_table = document.createElement('button');
             view_game_table.id = 'Result_close_button';
-
             view_game_table.onclick = post_game_peek
-            
             view_game_table.innerHTML = "View game board ";
 
             rmc.appendChild(win_msg);
@@ -610,6 +581,7 @@
 
             disable_game_table()
       }
+      // same deal with the X and O win screen but this time it says draw and shows both the x and the o
       function draw(){
             const rmc = document.getElementById("result_menu-content");
             const result_menu = document.getElementById("result_menu");
@@ -644,12 +616,12 @@
             win_msg.appendChild(close_button);
             win_msg.appendChild(view_game_table)
             disable_game_table()
-
       }
 
       // runs connection as soon as script loads
       //createSocket();
       update_players();
+      
 </script>
 </head>
 <body>
