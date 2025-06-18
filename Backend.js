@@ -147,9 +147,9 @@ io.on('connection', (socket) => {
 
             //the join game function has the o player at the front
             if(opletter == 'x') {
-                joinGame(data.screen_name, data.opponent, "x");
+                joinGame(data.screen_name, data.opponent);
             } else{
-                joinGame(data.opponent, data.screen_name, "o");
+                joinGame(data.opponent, data.screen_name);
             }
 
             let opponentID = returnSocketID(data.opponent);
@@ -188,6 +188,15 @@ io.on('connection', (socket) => {
         let activeList = await returnActiveGames();
         let idleList = await returnIdlePlayers();
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
+    });  
+
+    socket.on('END-GAME', async (data) => { //data holds .screen_name and .move_placement (1-9)
+            console.log(data.winner + " won!"); 
+
+            //get opponent name
+            let opponent = await returnOpponent(data.screen_name);
+
+            io.to(returnSocketID(opponent)).emit("END-GAME", {'winner' : data.winner});     
     });  
 });
     
@@ -334,7 +343,7 @@ async function returnActiveGames() {
 async function returnIdlePlayers() {
     query="SELECT screen_name FROM logged_in_screenname WHERE NOT EXISTS (SELECT *  FROM players WHERE players.x_player = logged_in_screenname.screen_name OR players.o_player = logged_in_screenname.screen_name);";
     return new Promise((resolve, reject) => {
-        let idles = []
+        let idles = [];
         dbCon.query(query, function (error, result) { 
             if (error) {
                 console.log(error);
@@ -353,13 +362,10 @@ async function returnIdlePlayers() {
     });
 }
 
-async function joinGame(o, x, opponent) {
-    console.log("o is " + o + "\nx is " + x + "\nYour joining someone who is " + opponent);
-    if(opponent == "x") {
-        var query="INSERT players SET o_player = ?, x_player = ?";
-    } else {
-        var query="INSERT players SET x_player = ?, o_player = ?";
-    }
+async function joinGame(o, x) {
+    //console.log("o is " + o + "\nx is " + x + "\nYour joining someone who is " + opponent);
+
+    var query="INSERT players SET o_player = ?, x_player = ?";
     return new Promise((resolve, reject) => {
         dbCon.query(query, [o, x], function (error, result) {
             if (error) {
