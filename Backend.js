@@ -137,8 +137,6 @@ io.on('connection', (socket) => {
             console.log("Join unsuccessful");
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
-            console.log("Join Successful");
-
             //removes the client from the players table before adding them to the oppoents name
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
@@ -154,6 +152,9 @@ io.on('connection', (socket) => {
             } else{
                 joinGame(data.opponent, data.screen_name, "o");
             }
+
+            console.log("The user is requesting to join socketID: " + returnSocketID(data.opponent));
+            console.log("From ID: " + socket.id);
 
             returnActiveGames();
             returnIdlePlayers();
