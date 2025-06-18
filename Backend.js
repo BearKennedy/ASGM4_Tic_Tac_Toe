@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
 	    switch (data) {
 		    case "JOIN": socket.join("game-msg"); socket.emit("alert","Joined"); break; // join room
 		    case "EXIT": socket.leave("game-msg"); socket.emit("alert","Exited"); break; // exit room
-		    default: io.to("game-msg").emit("game-msg", data); // send to room1 only
+		    default: io.to("game-msg").emit("game-msg", data); // send to game-msg room only
 	    }
 
     });
@@ -143,6 +143,9 @@ io.on('connection', (socket) => {
             
             //figures out which letter the opponent is
             opletter = await whichLetterIsOp(data.opponent);
+
+            removeUserFromDatabase("players", "x_player", data.opponent);
+            removeUserFromDatabase("players", "o_player", data.opponent);
 
             console.log(data.opponent + " is " + opletter);
 
@@ -336,28 +339,19 @@ async function returnIdlePlayers() {
 async function joinGame(o, x, opponent) {
     console.log("o is " + o + "\nx is " + x + "\nYour joining someone who is " + opponent);
     if(opponent == "x") {
-        var query="UPDATE players SET o_player = ? WHERE x_player = ?";
-        await dbCon.query(query, [o, x], function (error, result) {
-            if (error) {
-                console.log(error);
-                console.log("DB access error");
-                return;
-            }
-            console.log("PLAYERS TABLE UPDATED X");
-            //res.send(req.body.username+" added to logged_in_screenname");
-        });
+        var query="INSERT players SET o_player = ?, x_player = ?";
     } else {
-        var query="UPDATE players SET x_player = ? WHERE o_player = ?";
-        await dbCon.query(query, [x, o], function (error, result) {
-            if (error) {
-                console.log(error);
-                console.log("DB access error");
-                return;
-            }
-            console.log("PLAYERS TABLE UPDATED O");
-            //res.send(req.body.username+" added to logged_in_screenname");
-        });
+        var query="INSERT players SET x_player = ?, o_player = ?";
     }
+    await dbCon.query(query, [o, x], function (error, result) {
+        if (error) {
+            console.log(error);
+            console.log("DB access error");
+            return;
+        }
+        console.log("PLAYERS TABLE UPDATED X");
+        //res.send(req.body.username+" added to logged_in_screenname");
+    });
 }
 
 async function whichLetterIsOp(opsName) {
