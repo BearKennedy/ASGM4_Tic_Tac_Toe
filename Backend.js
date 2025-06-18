@@ -1,29 +1,18 @@
-// SocketIO with node.js example
-// By. A. Ikeji + us
-//
-// Note: All the require('...') used may need to be installed if not already installed 
-// on your server. To install, use something like   npm install cors  or npm install -g cors  on the command line
+// By Ryan Retan and Bear Kennedy
+// Due Jun. 18, 2025
+// Node.js file for assignment 4
 
-// We will also use node as our http server (like our apache), hence we need the http library. We also bring in the express library although not necessary but it provides middleware functionalities for the node http-server.
-// Note that you can still use the socket-io from javascripts loaded via apache. In other words, you can use apache as your webserver and node.js with socket-io for the socket communication part much like how we used PHp web sockets and apache.
+// With some provided code from A. Ikeji
+
+// Uses socket.io to send and recieve messages from clients
+
 
 const cors = require('cors'); // Cross Origin Resource Sharing (CORS) is necessary to configure the socket connection and explicitly grant our socket-io clients (on the the webpage side) proper access to the server (on the AWS side).
-// One of the issues is that we don't want javaScript loaded from one origin e.g. www.example.com to connect to another origin e.g. www.example2.com unless the CORS configuration explicitly allows it.
-
-/*
-CORS is generally necessary for Socket.IO, especially in versions 3 and above, if your client and server are not on the same origin (domain, port, and protocol).
-Same-Origin Policy (SOP): Newer browsers may enforce security measure called the Same-Origin Policy (SOP) that prevents scripts from making requests to a different origin than the one they originated (were loaded) from.
-Socket.IO and CORS: Socket.IO connections from the browser to a server is subject to CORS restrictions. For example, the script on the browser may have originated from www.client.com and the server socket.io is on www.server.com, this will require CORS setup. Even when the browser JS is loaded from www.example.com and the server socket.io is running on www.example.com:8080, it still may require CORS setup because of the different in ports.
-*/
-
 const app = require('express')(); // express is the middleware for handling the http requests such as get/post among other things.
 app.use(cors()); // Using the CORS middleware
 const httpServer = require('http').createServer(app);
 const  {Server}  = require('socket.io'); // deconstruct Server i.e. get the "Server" part of the socket.io object
-//var activeList = "";
-//var idleList = "";
 var nameToID = [];
-//var nameTaken = true;
 
 // Get public ip address and use it to setup CORS
 var myIp=false;
@@ -48,7 +37,6 @@ const io = new Server(httpServer, {
 io.on('connection', (socket) => {
     console.log(`Client connected: ${socket.id}`);
     // if message type is general-msg, handle it here
-    // Note that data sent between client & server does not have to be plain text, objects and binary data can be sent too. You just have to parse it the right way upon receipt.
 
     // THIS IS HOW WE CATCH OR RECICIVE 
     socket.on('general-msg', (data) => {
@@ -72,43 +60,48 @@ io.on('connection', (socket) => {
 	    	case "broadcastAllMinusMe": socket.broadcast.emit("general-msg","All minus me "+data.message); break;
 
 		// Broadcast the message to ONLY the sender client
-	    	case "ResendToMe": socket.emit("general-msg","Resend bk to me "+data.message); break;
+	    	case "ResendToMe": socket.emit("general-msg","Resend to me "+data.message); break;
 	    }
     });
 
+    //When the client wants to log out
     socket.on('TO-SERVER LOGOUT', (screenName) => {
         console.log(`Client disconnected: ${socket.id}`);
 
+        //removes the screen name and socket id entry from the array
         for(let i = 0; i < nameToID.length; i++) {
             if(nameToID[i][0] == screenName) {
                 nameToID.splice(i, 1);
             }
         }
 
+        //removes the screenname from all databases
         removeUserFromDatabase("players", "x_player", screenName);
         removeUserFromDatabase("players", "o_player", screenName);
         removeUserFromDatabase("logged_in_screenname", "screen_name", screenName);
-
-        //remove from the array
     });
 
+    //When the client wants to login
     socket.on('TO-SERVER LOGIN', async (screenName) => { 
         console.log('Server received login request for:', screenName); 
 
         let nameTaken = await addUserExistCheck(screenName); // adds the name if it is not taken
         
         if(nameTaken){ 
+            //if the name is taken, it is returned to the user
             socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
+            //else, the name and socket id are added to the array
             nameToID.push([screenName, socket.id]);
-            console.log(nameToID);
+
+            //message is sent back to the client with the lists of players
             let activeList = await returnActiveGames();
             let idleList = await returnIdlePlayers();
             socket.emit("LOGIN-OK", {'media': "LOGIN-OK", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
-            //console.log("found? : " + returnSocketID("test"));
         }
     });  
 
+    //When the client wants to make a new game
     socket.on('NEW-GAME', async (data) => { //data holds .screen_name and .choice
         console.log('Server received new game request for:', data.screen_name); 
 
@@ -125,6 +118,7 @@ io.on('connection', (socket) => {
         socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
     });  
     
+    //When the client wants to join another game
     socket.on('JOIN', async (data) => { //data holds .screen_name and .opponent
         console.log('User '+  data.screen_name + ' wants to join user ' + data.opponent); 
 
@@ -133,33 +127,36 @@ io.on('connection', (socket) => {
             console.log("Join unsuccessful");
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
-            //removes the client from the players table before adding them to the opponents name
+            //removes the client from the players table
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
             
             //figures out which letter the opponent is
             let opletter = await whichLetterIsOp(data.opponent);
 
+            //removes the opponent from the players table
             removeUserFromDatabase("players", "x_player", data.opponent);
             removeUserFromDatabase("players", "o_player", data.opponent);
 
-            console.log(data.opponent + " is " + opletter);
+            //console.log(data.opponent + " is " + opletter);
 
             //the join game function has the o player at the front
+            //this function creates a new database entry in players with both players
             if(opletter == 'x') {
                 joinGame(data.screen_name, data.opponent);
             } else{
                 joinGame(data.opponent, data.screen_name);
             }
 
+            //gets oppoents socket ID from the users name
             let opponentID = returnSocketID(data.opponent);
-            console.log("The user is requesting to join socketID: " + opponentID);
-            console.log("From ID: " + socket.id);
 
+            //updates all other users
             let activeList = await returnActiveGames();
             let idleList = await returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
             
+            //sends the private PLAY socket message to both players
             if(opletter == 'x') {
                 io.to(opponentID).emit("PLAY", {'x_player' : data.opponent, 'o_player' : data.screen_name});
                 socket.emit("PLAY", {'x_player' : data.opponent, 'o_player' : data.screen_name});
@@ -171,16 +168,15 @@ io.on('connection', (socket) => {
         }
     });
 
+    //When the client sends move
     socket.on('MOVE', async (data) => { //data holds .screen_name and .move_placement (1-9)
-        console.log(data.screen_name + " is moving to " + data.move_placement); 
-        //socket.emit("MOVE", {'move_placement' : data.move_placement});
+        //console.log(data.screen_name + " is moving to " + data.move_placement); 
 
         //get opponent name
         let opponent = await returnOpponent(data.screen_name);
 
-        io.to(returnSocketID(opponent)).emit("MOVE", {'screen_name' : data.screen_name, 'move_placement' : data.move_placement});
-        //socket.emit("MOVE", {'move_placement' : data.opponent, 'o_player' : data.screen_name});
-            
+        //sends the move to the opponent
+        io.to(returnSocketID(opponent)).emit("MOVE", {'screen_name' : data.screen_name, 'move_placement' : data.move_placement});    
     });  
 
     //maybe will be removed? Used for constantly refreshing the page
@@ -190,42 +186,37 @@ io.on('connection', (socket) => {
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 
+    //When the client sees the end game and sends it to the server
     socket.on('END-GAME', async (data) => { //data holds .screen_name and .move_placement (1-9)
-            console.log(data.winner + " won!"); 
+        console.log(data.winner + " won!"); 
 
-            //get opponent name
-            let opponent = await returnOpponent(data.screen_name);
+        //get opponent name
+        let opponent = await returnOpponent(data.screen_name);
 
-            io.to(returnSocketID(opponent)).emit("END-GAME", {'winner' : data.winner});     
+        //sends the end game to the opponent
+        io.to(returnSocketID(opponent)).emit("END-GAME", {'winner' : data.winner});     
     });  
 });
     
 
-// Listen on prot 8080. Make sure it is open in network security of AWS for this machine
+// Listen on port 8081. 
 const PORT = 8081;
 httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-/* we need to add the functions create port and then set it up so we can use it BUT it works
-issue is that css is not loaded with page when you go through the port, which is strange....*/
-
 /////////////////////// SQL STUFF //////////////////////////////
 const express = require('express');	// express is basically a middleware ap to enhance for http requests
 const { stat } = require('fs');
 
-const port = 8081
-
-app.use(cors()); // Using the CORS middleware
 var dbCon = require('./connectToDB.js').dbCon; // connect to DB
 
 app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
-
-//app.listen(port, () => console.log(`we have a connection on port: ${port}`));
-
+// Checks if the user exists in the database. If it doesnt, the screen name is added to the database
+// returns true or false depending on if the user exists
 async function addUserExistCheck(screenName) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
     return new Promise((resolve, reject) => {
@@ -236,9 +227,9 @@ async function addUserExistCheck(screenName) {
                 return;
             }
 
+            //if there are results, the name exists
             if (result.length!=0) {
                 console.log("name taken");
-                ////  HERE IS THE EMMIT
                 resolve(true);
                 return; //user screen name does exist
             }
@@ -249,29 +240,30 @@ async function addUserExistCheck(screenName) {
     });
 }
 
+// helper function that adds a screenName to the logged_in_screenname table
 async function addUserToDatabase(screenName) {
     var query="INSERT INTO logged_in_screenname SET screen_name = ?";
     await dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
-            //res.send("DB access error");
             return;
         }
-        //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
 
+// function that removes a given screen name from a passed table and column
+// the table and column are strings given in this file, the screen name is from the user
 async function removeUserFromDatabase(table, column, screenName) {
     var query="DELETE FROM " + table + " WHERE " + column + " = ?";
     await dbCon.query(query, [screenName], function (error, data, fields) {
         if (error) {
             console.log(error);
-            //res.send("DB access error");
             return;
         }
     });
 }
 
+// Used to create a new game by creating a new row in the players database
 async function newGame(screenName, letterChoice) {
     var query="INSERT INTO players SET " + letterChoice + "_player = ?";
     await dbCon.query(query, [screenName], function (error, data, fields) {
@@ -280,11 +272,10 @@ async function newGame(screenName, letterChoice) {
             console.log("DB access error");
             return;
         }
-        //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
 
-
+// funciton used to return active games as a table in html
 async function returnActiveGames() {
     var query="SELECT * FROM players ";
     return new Promise((resolve, reject) => {
@@ -293,13 +284,14 @@ async function returnActiveGames() {
 
             if (error) {
                 console.log(error);
-                //res.send("DB access error");
                 return;
             }
             if (result.length==0) {
                 activeList += "No Games";
             } else {
                 for (var i = 0; i < result.length; i++) {
+                    // if a player is null, a JOIN button is put in place of a name
+                    // if not, both names are displayed
                     if(result[i].x_player == null) { 
                         activeList +=
                         `<tr>
@@ -333,14 +325,16 @@ async function returnActiveGames() {
                     }
                 }
             }
+            //html is returned
             resolve(activeList);
         });
     });
 }
 
 
-               
+// Function that returns a list of idle players names in html 
 async function returnIdlePlayers() {
+    //a player is idle if he/she is loggin in(inside the logged_in_screenname table), but is not in the players table
     query="SELECT screen_name FROM logged_in_screenname WHERE NOT EXISTS (SELECT *  FROM players WHERE players.x_player = logged_in_screenname.screen_name OR players.o_player = logged_in_screenname.screen_name);";
     return new Promise((resolve, reject) => {
         let idles = [];
@@ -356,12 +350,14 @@ async function returnIdlePlayers() {
                 }
             }
 
+            //formatted as html then returned
             let idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
             resolve(idleList);
         });
     });
 }
 
+// Puts 2 players (strings) into the players table
 async function joinGame(o, x) {
     //console.log("o is " + o + "\nx is " + x + "\nYour joining someone who is " + opponent);
 
@@ -379,29 +375,36 @@ async function joinGame(o, x) {
     })
 }
 
+// Returns which letter the opponent is
 async function whichLetterIsOp(opsName) {
     return new Promise((resolve, reject) => {
+        //checks the o_player col
         var query="SELECT * FROM players WHERE o_player = ?";
         dbCon.query(query, [opsName], function (error, result) {
             if (error) {
                 return reject(error);
             }
+            //if the o_player col is not empty, your oppoent is o
             if (result.length!=0) {
                 resolve('o');
             } else {
+                //else you opp is x
                 resolve('x');
             }
         });
     });
 }
 
+// Returns the opponent of the given screen name
 async function returnOpponent(you) {
     return new Promise((resolve, reject) => {
+        //returns any results from the screen name in the table 
         var query="SELECT * FROM players WHERE ? IN (x_player, o_player)";
         dbCon.query(query, [you], function (error, result) {
             if (error) {
                 return reject(error);
             }
+            //if the given name is in the x_col, your opponent is o, and vise versa
             if (result[0].x_player == you) {
                 resolve(`${result[0].o_player}`);
             } else {
@@ -412,17 +415,14 @@ async function returnOpponent(you) {
 
 }
 
+// Returns the socket ID of a given screen name
 function returnSocketID(name) {
+    //list of names and ids is checked for the given name
     for(let i = 0; i < nameToID.length; i++) {
         if(nameToID[i][0] == name) {
+            // the ID col of the row with the name given is returned
             return nameToID[i][1];
         }
     }
     return false;
 }
-
-//INSERT INTO players SET x_player = "player"; //(or o_player) when someone makes a game 
-//UPDATE players SET o_player = "player2" WHERE x_player = "player"; //when someone joins the match (as o)
-//DELETE FROM players WHERE x_player = "player"; //when the game is over
-
-
