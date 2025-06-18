@@ -79,16 +79,24 @@ io.on('connection', (socket) => {
     // if message type is game-msg, handle it here
     socket.on('game-msg', (data) => {
        	    console.log(`Received message: ${data}`);
-	    switch (data) {
+	    switch (data.media) {
 		    case "JOIN": socket.join("game-msg"); socket.emit("alert","Joined"); break; // join room
 		    case "EXIT": socket.leave("game-msg"); socket.emit("alert","Exited"); break; // exit room
-		    default: io.to("game-msg").emit("game-msg", data); // send to game-msg room only
+		    default: io.to(data.opponentID).emit("PLAY", data.senderID); // send to game-msg room only
+            console.log("default");
 	    }
 
     });
 
     socket.on('TO-SERVER LOGOUT', (screenName) => {
         console.log(`Client disconnected: ${socket.id}`);
+
+        for(let i = 0; i < nameToID.length; i++) {
+            if(nameToID[i][0] == screenName) {
+                nameToID.splice(i, 1);
+            }
+        }
+
         removeUserFromDatabase("players", "x_player", screenName);
         removeUserFromDatabase("players", "o_player", screenName);
         removeUserFromDatabase("logged_in_screenname", "screen_name", screenName);
@@ -97,8 +105,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('TO-SERVER LOGIN', async (screenName) => { 
-        nameToID.push([screenName, socket.id]);
-        console.log(nameToID);
         console.log('Server received login request for:', screenName); 
 
         await addUserExistCheck(screenName); // adds the name if it is not taken
@@ -106,6 +112,8 @@ io.on('connection', (socket) => {
         if(nameTaken){ 
             socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
+            nameToID.push([screenName, socket.id]);
+            console.log(nameToID);
             await returnActiveGames();
             await returnIdlePlayers();
             socket.emit("LOGIN-OK", {'media': "LOGIN-OK", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
@@ -137,7 +145,7 @@ io.on('connection', (socket) => {
             console.log("Join unsuccessful");
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
-            //removes the client from the players table before adding them to the oppoents name
+            //removes the client from the players table before adding them to the opponents name
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
             
@@ -156,20 +164,20 @@ io.on('connection', (socket) => {
                 joinGame(data.opponent, data.screen_name, "o");
             }
 
-            console.log("The user is requesting to join socketID: " + returnSocketID(data.opponent));
+            let opponentID = returnSocketID(data.opponent);
+            console.log("The user is requesting to join socketID: " + opponentID);
             console.log("From ID: " + socket.id);
 
             returnActiveGames();
             returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
-            //socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "PLAY", 'X-player-screen-name': data.screen_name, 'O-player-screen-name': data.opponent});
+            socket.emit("game-msg", {media: "game-msg", 'opponentID': opponentID, 'senderID': socket.id});
         }
     });
 
     socket.on('MOVE', async (data) => { //data holds .screen_name and .move_placement (1-9)
         console.log(data.screen_name + " is moving " + data.move_placement); 
-        //newGame(data.screen_name, data.choice_of_X_or_O); // adds the name if it is not taken
-        //socket.emit("game-msg", {'media': "broadcastAllPlusMe", 'message': "MOVE", 'player': data.screen_name}); //sends the move to the opponent
+        //socket.emit("game-msg", {'media': "MOVE", 'message': "MOVE", 'player': data.screen_name}); //sends the move to the opponent
     });  
 
     //maybe will be removed? Used for constantly refreshing the page
@@ -310,8 +318,6 @@ async function returnActiveGames() {
                 }
 			}
         }
-        //console.log(activeList);
-		//res.send(activeList); //somehow return
     });
 }
 
@@ -332,7 +338,6 @@ async function returnIdlePlayers() {
         }
 
         idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
-        //console.log(idleList); 
     });
 }
 
@@ -350,7 +355,6 @@ async function joinGame(o, x, opponent) {
             return;
         }
         console.log("PLAYERS TABLE UPDATED X");
-        //res.send(req.body.username+" added to logged_in_screenname");
     });
 }
 
@@ -372,7 +376,6 @@ async function whichLetterIsOp(opsName) {
 
 function returnSocketID(name) {
     for(let i = 0; i < nameToID.length; i++) {
-        console.log(nameToID[i][0]);
         if(nameToID[i][0] == name) {
             return nameToID[i][1];
         }
