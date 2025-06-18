@@ -106,8 +106,8 @@ io.on('connection', (socket) => {
         if(nameTaken){ 
             socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
-            returnActiveGames();
-            returnIdlePlayers();
+            await returnActiveGames();
+            await returnIdlePlayers();
             socket.emit("LOGIN-OK", {'media': "LOGIN-OK", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
             //console.log("found? : " + returnSocketID("test"));
         }
@@ -129,18 +129,32 @@ io.on('connection', (socket) => {
         socket.emit("general-msg", {'media': "update", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
     });  
     
-    socket.on('JOIN', (data) => { //data holds .screen_name and .opponent
+    socket.on('JOIN', async (data) => { //data holds .screen_name and .opponent
         console.log('User '+  data.screen_name + ' wants to join user ' + data.opponent); 
+
+        //Doesnt let someone join themself
         if(data.screen_name == data.opponent) {
             console.log("Join unsuccessful");
             socket.emit("general-msg", {'media': "ResendToMe", 'message': "CANNOT-PLAY-YOURSELF"}); 
         } else {
-            console.log("Join unsuccessful");
+            console.log("Join Successful");
+
             //removes the client from the players table before adding them to the oppoents name
             removeUserFromDatabase("players", "x_player", data.screen_name);
             removeUserFromDatabase("players", "o_player", data.screen_name);
             
-            //joinGame(data.screen_name, data.opponent);
+            //figures out which letter the opponent is
+            opletter = await whichLetterIsOp(data.opponent);
+
+            console.log(data.opponent + " is " + opletter);
+
+            //the join game function has the o player at the front
+            if(opletter == 'x') {
+                joinGame(data.screen_name, data.opponent, "x");
+            } else{
+                joinGame(data.opponent, data.screen_name, "o");
+            }
+
             returnActiveGames();
             returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
@@ -155,9 +169,9 @@ io.on('connection', (socket) => {
     });  
 
     //maybe will be removed? Used for constantly refreshing the page
-    socket.on('UPDATE', () => {
-        returnActiveGames();
-        returnIdlePlayers();
+    socket.on('UPDATE', async () => {
+        await returnActiveGames();
+        await returnIdlePlayers();
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 });
@@ -318,16 +332,46 @@ async function returnIdlePlayers() {
     });
 }
 
-async function joinGame(screenName, opponentScreenName) {
-    var query="SELECT * FROM players WHERE o_player = ? OR x_player = ?";
-    await dbCon.query(query, [opponentScreenName], function (error, result) {
-        if (error) {
-            console.log(error);
-            console.log("DB access error");
-            return;
-        }
-        console.log(result);
-        //res.send(req.body.username+" added to logged_in_screenname");
+async function joinGame(o, x, opponent) {
+    console.log("o is " + o + "\nx is " + x + "\nYour joining someone who is " + opponent);
+    if(opponent == "x") {
+        var query="UPDATE players SET o_player = ? WHERE x_player = ?";
+        await dbCon.query(query, [o, x], function (error, result) {
+            if (error) {
+                console.log(error);
+                console.log("DB access error");
+                return;
+            }
+            console.log("PLAYERS TABLE UPDATED X");
+            //res.send(req.body.username+" added to logged_in_screenname");
+        });
+    } else {
+        var query="UPDATE players SET x_player = ? WHERE o_player = ?";
+        await dbCon.query(query, [x, o], function (error, result) {
+            if (error) {
+                console.log(error);
+                console.log("DB access error");
+                return;
+            }
+            console.log("PLAYERS TABLE UPDATED O");
+            //res.send(req.body.username+" added to logged_in_screenname");
+        });
+    }
+}
+
+async function whichLetterIsOp(opsName) {
+    return new Promise((resolve, reject) => {
+        var query="SELECT * FROM players WHERE o_player = ?";
+        dbCon.query(query, [opsName], function (error, result) {
+            if (error) {
+                return reject(error);
+            }
+            if (result.length!=0) {
+                resolve('o');
+            } else {
+                resolve('x');
+            }
+        });
     });
 }
 

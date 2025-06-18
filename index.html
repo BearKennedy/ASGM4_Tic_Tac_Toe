@@ -69,7 +69,7 @@
 
       // function that we call to update players and idles 
       function update_players(){
-            //Intervalid ??= setInterval(Update_players, 1000)
+            Intervalid ??= setInterval(Update_players, 1000)
       }
       // function that sends command to server to update all users idle and active games
       function Update_players(){
@@ -617,8 +617,8 @@
       }
 
       // runs connection as soon as script loads
-      createSocket();
-      //update_players()
+      //createSocket();
+      update_players();
 </script>
 </head>
 <body>
