@@ -76,6 +76,7 @@
                   // tell user it failed 
 			alert(message.message);
                   //display error message on screen 
+                  document.getElementById("error_msg").style.visibility ='visible'
                   document.getElementById("error_msg").innerHTML = message.message;
                   
         	});
@@ -84,6 +85,7 @@
             connectedSocket.on("LOGIN-OK", function (message) {
                   // display message to user and update viewport 
                   //alert("MADE IT");
+                  document.getElementById("error_msg").style.visibility ='hidden'
                   document.getElementById('main_box').style.visibility = 'visible';
                   document.getElementById('Log_in_screen').style.visibility = 'hidden';
                   fillActives(message.activeList);
@@ -149,7 +151,11 @@
             // get user sent screen name
             screen_name = document.getElementById('Screenname').value;
             // if its null reject it 
-            if (screen_name == '') {return}
+            if (screen_name == '') {
+                  document.getElementById("error_msg").style.visibility ='visible'
+                  document.getElementById("error_msg").innerHTML = "name can not be null"
+                  return
+            } 
             // connect to server if we need to 
             if (!connectedSocket) createSocket();
             // send request to server 
@@ -735,7 +741,7 @@
             </form> 
             <!-- send error here, if theres an error with adding the username to the database
              this gets changed -->
-      <h1 id="error_msg" style="color: red;">error</h1>
+      <h1 id="error_msg" style="color: red; visibility: hidden;">error</h1>
       </div>
 
       <!-- the main table that holds everything, hidden until user logs in right-->
