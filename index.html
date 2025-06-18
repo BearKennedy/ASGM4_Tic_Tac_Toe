@@ -100,11 +100,6 @@
 
                   const button = gameSquareDiv.querySelector('button');
                   Take_turn(button, message.move_placement)
-                 // document.getElementsByName(message.move_placement)[0].click();
-
-                  // what is message supposed to be sending???
-                  //i think this is looping in on itself 
-                  //doesntwork for some reason
         	});
       }
 
@@ -199,10 +194,13 @@
       function board_reset(){
             for (let i = 1; i <10; i++) {
                  let x = i.toString();
-            const gameSquareDiv = document.getElementsByName(x)[0]; // Get your target div
-            const imageToRemove = gameSquareDiv.querySelector('img')
-            imageToRemove.remove();
-            gameSquareDiv.id = ""
+                  const gameSquareDiv = document.getElementsByName(x)[0]
+                   if (gameSquareDiv) {
+                        gameSquareDiv.id = ""
+                        const imageToRemove = gameSquareDiv.querySelector('img');
+                        if (imageToRemove) {
+                              imageToRemove.remove();}
+                        }
             }
             enable_game_table() // turn buttons back on, and show buttons
       }
