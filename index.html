@@ -57,6 +57,7 @@
             var whoAmI;
             connectedSocket.on("PLAY", function (message) {
 			//alert(message.x_player + " is x\n" + message.o_player + " is o");
+                  board_reset();
                   let opponent;
                   isXTurn = true; 
 
@@ -75,7 +76,7 @@
                   document.getElementById("x_screen").innerHTML = "X: " + message.x_player;
                   document.getElementById("o_screen").innerHTML = "O: " + message.o_player;
                   inGame = true;
-                  toggle_game_div()
+                  document.getElementById('game_window').style.display = 'block';
                   //GAME IS STARTED
         	});
 
@@ -196,7 +197,8 @@
       // use TBD!
       function leave_game(button){
             sendToServer('EXIT', button);
-            board_reset()
+            document.getElementById('game_window').style.display == 'none';
+            board_reset();
       }
 
       function board_reset(){
