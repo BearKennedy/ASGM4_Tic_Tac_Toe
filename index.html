@@ -58,11 +58,18 @@
             connectedSocket.on("PLAY", function (message) {
 			//alert(message.x_player + " is x\n" + message.o_player + " is o");
                   let opponent;
+                  isXTurn = true; 
 
                   if(whoAmI == 'x') {
                         opponent = message.o_player;
                   } else {
                         opponent = message.x_player;
+                  }
+
+                  if(message.x_player == screen_name) {
+                        myTurn = true;
+                  } else {
+                        myTurn = false;
                   }
                   
                   document.getElementById("x_screen").innerHTML = "X: " + message.x_player;
@@ -100,6 +107,7 @@
 
                   const button = gameSquareDiv.querySelector('button');
                   Take_turn(button, message.move_placement)
+                  myTurn = true;
         	});
       }
 
@@ -218,10 +226,8 @@
       function toggle_game_div(button) {
             if(document.getElementById('game_window').style.display == 'none') {
                   document.getElementById('game_window').style.display = 'block';
-                  document.getElementById('main_box').style.visibility = 'hidden'
             } else {
-                  document.getElementById('game_window').style.display = 'none';
-                  document.getElementById('main_box').style.visibility = 'visible'    
+                  document.getElementById('game_window').style.display = 'none';    
             }
       }
 
@@ -234,13 +240,15 @@
       var move_count  = 0;
       // function we call whenever we want to take a turn
       // function takes in a button since the button to move is the game square itself
-      
+      var myTurn = true;
       function take_turn_setup(button, number){
-            do_a_move(number);
-            Take_turn(button, number)
-
-
+            if(myTurn) {
+                  do_a_move(number);
+                  Take_turn(button, number);
+                  myTurn = false;
+            }
       }
+
       //removed button 
       function Take_turn(button,number){
        const gameSquare = document.getElementsByName(number)[0];
@@ -783,7 +791,6 @@
                         </div>
                   </div>
             </div>
-      </div>
 
             <!-- where the tic-tac-toe game is played -->
             <div id = "game_window" style="display: none;">
