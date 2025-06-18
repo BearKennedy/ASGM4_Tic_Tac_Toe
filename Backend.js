@@ -20,10 +20,10 @@ const app = require('express')(); // express is the middleware for handling the 
 app.use(cors()); // Using the CORS middleware
 const httpServer = require('http').createServer(app);
 const  {Server}  = require('socket.io'); // deconstruct Server i.e. get the "Server" part of the socket.io object
-var activeList = "";
-var idleList = "";
+//var activeList = "";
+//var idleList = "";
 var nameToID = [];
-var nameTaken = true;
+//var nameTaken = true;
 
 // Get public ip address and use it to setup CORS
 var myIp=false;
@@ -60,7 +60,7 @@ io.on('connection', (socket) => {
 	    	case "broadcastAllPlusMe": io.emit("general-msg",data.message); break;
 
         //  custom addition that is for updates
-            case "update": io.emit("update-msg", data.message); break;
+            case "UPDATED-USER-LIST-AND-STATUS": io.emit("UPDATED-USER-LIST-AND-STATUS", data.message); break;
 
         //  custom return for when screen name is taken
             case "LOGIN-FAIL": socket.emit("LOGIN-FAIL",data.message); break;
@@ -74,17 +74,6 @@ io.on('connection', (socket) => {
 		// Broadcast the message to ONLY the sender client
 	    	case "ResendToMe": socket.emit("general-msg","Resend bk to me "+data.message); break;
 	    }
-    });
-
-    // if message type is game-msg, handle it here
-    socket.on('game-msg', (data) => {
-       	    console.log(`Received message: ${data}`);
-	    switch (data.media) {
-		    case "JOIN": socket.join("game-msg"); socket.emit("alert","Joined"); break; // join room
-		    case "EXIT": socket.leave("game-msg"); socket.emit("alert","Exited"); break; // exit room
-            default: console.log("default");
-	    }
-
     });
 
     socket.on('TO-SERVER LOGOUT', (screenName) => {
@@ -106,21 +95,21 @@ io.on('connection', (socket) => {
     socket.on('TO-SERVER LOGIN', async (screenName) => { 
         console.log('Server received login request for:', screenName); 
 
-        await addUserExistCheck(screenName); // adds the name if it is not taken
+        let nameTaken = await addUserExistCheck(screenName); // adds the name if it is not taken
         
         if(nameTaken){ 
             socket.emit("LOGIN-FAIL", {'media': "LOGIN-FAIL", 'message': "Screen name already taken!"}); 
         } else {
             nameToID.push([screenName, socket.id]);
             console.log(nameToID);
-            await returnActiveGames();
-            await returnIdlePlayers();
+            let activeList = await returnActiveGames();
+            let idleList = await returnIdlePlayers();
             socket.emit("LOGIN-OK", {'media': "LOGIN-OK", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
             //console.log("found? : " + returnSocketID("test"));
         }
     });  
 
-    socket.on('NEW-GAME', (data) => { //data holds .screen_name and .choice
+    socket.on('NEW-GAME', async (data) => { //data holds .screen_name and .choice
         console.log('Server received new game request for:', data.screen_name); 
 
         //removes the users game in case they already had one
@@ -131,9 +120,9 @@ io.on('connection', (socket) => {
         newGame(data.screen_name, data.choice_of_X_or_O);
 
         //updates everyone else
-        returnActiveGames();
-        returnIdlePlayers();
-        socket.emit("general-msg", {'media': "update", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
+        let activeList = await returnActiveGames();
+        let idleList = await returnIdlePlayers();
+        socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
     });  
     
     socket.on('JOIN', async (data) => { //data holds .screen_name and .opponent
@@ -167,8 +156,8 @@ io.on('connection', (socket) => {
             console.log("The user is requesting to join socketID: " + opponentID);
             console.log("From ID: " + socket.id);
 
-            returnActiveGames();
-            returnIdlePlayers();
+            let activeList = await returnActiveGames();
+            let idleList = await returnIdlePlayers();
             socket.emit("general-msg", {'media': "UPDATED-USER-LIST-AND-STATUS", 'message': "UPDATED-USER-LIST-AND-STATUS", 'activeList': activeList, 'idleList': idleList}); 
             
             if(opletter == 'x') {
@@ -196,8 +185,8 @@ io.on('connection', (socket) => {
 
     //maybe will be removed? Used for constantly refreshing the page
     socket.on('UPDATE', async () => {
-        await returnActiveGames();
-        await returnIdlePlayers();
+        let activeList = await returnActiveGames();
+        let idleList = await returnIdlePlayers();
         socket.emit("general-msg", {'media': "ResendToMe", 'message': "LOGIN-OK", 'activeList': activeList, 'idleList': idleList}); 
     });  
 });
@@ -230,22 +219,24 @@ app.use(express.urlencoded({ extended: true }));
 
 async function addUserExistCheck(screenName) {
     var query="SELECT screen_name FROM logged_in_screenname WHERE screen_name = ?";
-    await dbCon.query(query, [screenName], function (error, result) { 
-        if (error) {
-            console.log(error);
-            console.log("DB access error");
-            return;
-        }
+    return new Promise((resolve, reject) => {
+        dbCon.query(query, [screenName], function (error, result) { 
+            if (error) {
+                console.log(error);
+                console.log("DB access error");
+                return;
+            }
 
-        if (result.length!=0) {
-            console.log("name taken");
-            ////  HERE IS THE EMMIT
-            nameTaken = true;
-            return; //user screen name does exist
-        }
-        nameTaken = false;
-        console.log("name not taken");
-        addUserToDatabase(screenName); //user screen name does not exist
+            if (result.length!=0) {
+                console.log("name taken");
+                ////  HERE IS THE EMMIT
+                resolve(true);
+                return; //user screen name does exist
+            }
+            console.log("name not taken");
+            addUserToDatabase(screenName); //user screen name does not exist
+            resolve(false);
+        });
     });
 }
 
@@ -287,71 +278,78 @@ async function newGame(screenName, letterChoice) {
 
 async function returnActiveGames() {
     var query="SELECT * FROM players ";
-    await dbCon.query(query, function (error, result) { 
-        activeList = "<tr> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> X-Player </th> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> O-Player </th> </tr>";
+    return new Promise((resolve, reject) => {
+        dbCon.query(query, function (error, result) { 
+            let activeList = "<tr> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> X-Player </th> <th style = 'padding: 10px; border-bottom: 4px solid black; margin = -4px'> O-Player </th> </tr>";
 
-        if (error) {
-            console.log(error);
-            //res.send("DB access error");
-            return;
-        }
-        if (result.length==0) {
-            activeList += "No Games";
-        } else {
-            for (var i = 0; i < result.length; i++) {
-                if(result[i].x_player == null) { 
-                    activeList +=
-                    `<tr>
-                            <th style = "padding: 10px">
-                                <button id = "join_${result[i].o_player}" onclick = "join_game(this)">JOIN</button>
-                            </th style = "padding: 10px">
-                            <th>
-                                ${result[i].o_player}
-                            </th>
-                    </tr>`;
-                } else if (result[i].o_player == null) {
-                    activeList +=
-                    `<tr>
-                            <th style = "padding: 10px">
-                                ${result[i].x_player}
-                            </th>
-                            <th style = "padding: 10px">
-                                <button id = "join_${result[i].x_player}" onclick = "join_game(this)">JOIN</button>
-                            </th>
-                    </tr>`; 
-                } else {
-                    activeList +=
-                    `<tr>
-                            <th style = "padding: 10px">
-                                ${result[i].x_player}
-                            </th>
-                            <th style = "padding: 10px">
-                                ${result[i].o_player}
-                            </th>
-                    </tr>`; 
+            if (error) {
+                console.log(error);
+                //res.send("DB access error");
+                return;
+            }
+            if (result.length==0) {
+                activeList += "No Games";
+            } else {
+                for (var i = 0; i < result.length; i++) {
+                    if(result[i].x_player == null) { 
+                        activeList +=
+                        `<tr>
+                                <th style = "padding: 10px">
+                                    <button id = "join_${result[i].o_player}" onclick = "join_game(this)">JOIN</button>
+                                </th style = "padding: 10px">
+                                <th>
+                                    ${result[i].o_player}
+                                </th>
+                        </tr>`;
+                    } else if (result[i].o_player == null) {
+                        activeList +=
+                        `<tr>
+                                <th style = "padding: 10px">
+                                    ${result[i].x_player}
+                                </th>
+                                <th style = "padding: 10px">
+                                    <button id = "join_${result[i].x_player}" onclick = "join_game(this)">JOIN</button>
+                                </th>
+                        </tr>`; 
+                    } else {
+                        activeList +=
+                        `<tr>
+                                <th style = "padding: 10px">
+                                    ${result[i].x_player}
+                                </th>
+                                <th style = "padding: 10px">
+                                    ${result[i].o_player}
+                                </th>
+                        </tr>`; 
+                    }
                 }
-			}
-        }
+            }
+            resolve(activeList);
+        });
     });
 }
 
 
+               
 async function returnIdlePlayers() {
     query="SELECT screen_name FROM logged_in_screenname WHERE NOT EXISTS (SELECT *  FROM players WHERE players.x_player = logged_in_screenname.screen_name OR players.o_player = logged_in_screenname.screen_name);";
-    let idles = []
-    await dbCon.query(query, function (error, result) { 
-        if (error) {
-            console.log(error);
-            console.log("DB access error");
-            return;
-        }
-        if (result.length!=0) {
-            for(var i = 0; i < result.length; i++) { 
-                idles.push(`${result[i].screen_name}`);
+    return new Promise((resolve, reject) => {
+        let idles = []
+        dbCon.query(query, function (error, result) { 
+            if (error) {
+                console.log(error);
+                console.log("DB access error");
+                return;
             }
-        }
+            if (result.length!=0) {
+                for(var i = 0; i < result.length; i++) { 
+                    idles.push(`${result[i].screen_name}`);
+                }
+            }
 
-        idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
+            let idleList = "<h1> Idle Players: </h1><h2>" + idles.join("<br>") + "</h2>";
+            resolve(idleList);
+        });
     });
 }
 
@@ -362,14 +360,17 @@ async function joinGame(o, x, opponent) {
     } else {
         var query="INSERT players SET x_player = ?, o_player = ?";
     }
-    await dbCon.query(query, [o, x], function (error, result) {
-        if (error) {
-            console.log(error);
-            console.log("DB access error");
-            return;
-        }
-        console.log("PLAYERS TABLE UPDATED X");
-    });
+    return new Promise((resolve, reject) => {
+        dbCon.query(query, [o, x], function (error, result) {
+            if (error) {
+                console.log(error);
+                console.log("DB access error");
+                return;
+            }
+            console.log("PLAYERS TABLE UPDATED X");
+            resolve();
+        });
+    })
 }
 
 async function whichLetterIsOp(opsName) {
