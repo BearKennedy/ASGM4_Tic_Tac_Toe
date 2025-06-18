@@ -68,6 +68,7 @@
                   document.getElementById("x_screen").innerHTML = "X: " + message.x_player;
                   document.getElementById("o_screen").innerHTML = "O: " + message.o_player;
                   inGame = true;
+                  toggle_game_div()
                   //GAME IS STARTED
         	});
 
@@ -762,7 +763,7 @@
             </div>
 
             <!-- where the tic-tac-toe game is played -->
-            <div id = "game_window" style="">
+            <div id = "game_window" style="display: none;">
                   <!-- header for game table that shows players and who's turn it is -->
                   <div id = "game_info"> 
                         <div class = "game_info_categories"> <h1 style="text-align: center" id = x_screen>X: Screenname</h1></div>
@@ -796,29 +797,41 @@
                   <!-- close button-->
                   <button onclick="close_help_menu()" class="close-button">X</button> 
                   <!-- help menu content -->
-                  <h1 style="text-align: center;">Welcome to the best tic-tac-toe website out There</h1>
-                  <h3>Created by Ryan and Bear:</h3>
-                  <p> Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
-                        In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar
-                        vivamus fringilla lacus nec metus bibendum egestas. 
-                        Iaculis massa nisl malesuada lacinia integer nunc posuere.
-                        Ut hendrerit semper vel class aptent taciti sociosqu. 
-                        Ad litora torquent per conubia nostra inceptos himenaeos. </p>
-                  <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.
-                        Quisque faucibus ex sapien vitae pellentesque sem placerat. 
-                        In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor.
-                        Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. 
-                        Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos</p>
-                  <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. 
-                        Quisque faucibus ex sapien vitae pellentesque sem placerat. 
-                        In id cursus mi pretium tellus duis convallis. 
-                        Tempus leo eu aenean sed diam urna tempor. 
-                        Pulvinar vivamus fringilla lacus nec metus bibendum egestas. 
-                        Iaculis massa nisl malesuada lacinia integer nunc posuere. 
-                        Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per 
-                        conubia nostra inceptos himenaeos.Lorem ipsum dolor sit amet consectetur 
-                        adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat.
+                  <h1 style="text-align: center;">Welcome to the best tic-tac-toe website</h1>
+                  <h2>Created by Ryan Retan and Bear Kennedy:</h2>
+                  <p> Welcome to our tic-tac-toe game site. On this website you can connect with others 
+                        in the wonderful game of tic-tac-toe. </p>
+                        <h2>Getting started</h2>
+                  <p>To get started, simply enter a username into our login menu and click, if your username is not
+                        already take, you will be sent to our main page where all the action appends. If your username is 
+                        not valid then you will be asked to enter a different username. (Note: username field must be filled out
+                        and cannot be left blank.)
                   </p>
+                  <h2>Navigating The Page </h2>
+                  <p>Once you are within the main page, you can view the list of inactive players on the left, active games 
+                        on the right, join active games looking for players, or create your own game. if you make your own game you
+                        will then be prompted to make a choice of player either as the X player or as the O player. if you ever get lost
+                        you can always return to this help menu in the top right of the screen. next to the help menu there is a logout button.
+                        hitting log out button logs you out of the website and allows someone else to take your username
+                  </p>
+                  <h2>Playing The Game</h2>
+                  <p>Once you have selected 'join' on another players game or when another player joins your game
+                        you will be put into a private game room where you and your opponent and duke it out in a
+                        game of tic-tac-toe. There will be a 3x3 grid consisting of squares
+                        that you can click on when its your turn.
+                        when you click on a box either a X or an O will appear in that square depending 
+                        on witch player you are.
+                        The objective is simple, first player to get three of there symbols is a row first wins!
+                        Be carful though, the game can result in a draw if nether player can secure a win. so be smart
+                  </p>
+                  <p>Upon completing the game a result screen will appear stating which player won (X's or O's) and then 
+                  you have the option to view board or close the result menu. viewing the game board will show you the game 
+                  board for a few seconds before bringing the result menu back up. </p>
+
+                  <p>Once the game is over please hit the leave button at the bottom of the game board, this will allow you to go back 
+                        and join other games or make a new game </p>
+
+                        <h2>GOOD LUCK AND HAVE FUN!!!!</h2>
                         
                   </div>
             </div>
